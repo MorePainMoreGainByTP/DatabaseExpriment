@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">DatabaseExpriment</string>
+    <string name="user_name">请输入用户名</string>
+    <string name="password">请输入密码</string>
+    <string name="welcome_login">Welcome</string>
+    <string name="login">登录</string>
+    <string name="register">注册</string>
+    <string name="admin_login">管理员登录</string>
+    <string name="all_users">用户列表</string>
+
+</resources>
