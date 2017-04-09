@@ -5,7 +5,18 @@
     <string name="welcome_login">Welcome</string>
     <string name="login">登录</string>
     <string name="register">注册</string>
-    <string name="admin_login">管理员登录</string>
+    <string name="admin_login">用户管理系统</string>
     <string name="all_users">用户列表</string>
+    <string name="search_users">搜索用户</string>
+    <string name="delete_users">删除用户</string>
+    <string name="add_users">新增</string>
+    <string name="logout">注销</string>
+    <string name="add_user">新增</string>
+    <string name="username">用户名：</string>
+    <string name="cancel">取消</string>
+    <string name="delete">删除</string>
+    <string name="select_all">全选</string>
+    <string name="add_new_user">新增用户</string>
+    <string name="add">添加</string>
 
 </resources>

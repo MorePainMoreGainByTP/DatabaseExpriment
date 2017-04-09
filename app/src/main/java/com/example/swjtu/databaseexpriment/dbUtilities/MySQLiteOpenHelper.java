@@ -1,0 +1,42 @@
+package com.example.swjtu.databaseexpriment.dbUtilities;
+
+import android.content.Context;
+import android.database.DatabaseErrorHandler;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
+
+/**
+ * Created by tangpeng on 2017/2/18.
+ */
+
+public class MySQLiteOpenHelper extends SQLiteOpenHelper {
+
+    private static  final String CREATE_TABLE_USERS = "create table users(id integer primary key autoincrement,user_name varchar(20),password varchar(20))";
+    private static  final String CREATE_TABLE_RIGHTS = "create table rights(id integer primary key autoincrement,right_NO integer,module varchar(40),w_name varchar(40))";
+    private static  final String CREATE_TABLE_USER_RIGHTS = "create table user_rights(id integer primary key autoincrement," +
+            "user_ID integer references users(id) on update cascade on delete cascade,right_ID integer references rights(id) on update cascade on delete cascade)";
+
+    public MySQLiteOpenHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
+        super(context, name, factory, version);
+    }
+
+    public MySQLiteOpenHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version, DatabaseErrorHandler errorHandler) {
+        super(context, name, factory, version, errorHandler);
+    }
+
+    @Override
+    public void onCreate(SQLiteDatabase db) {
+        //第一次使用数据库，创建所需的表
+        //创建用户表
+        db.execSQL(CREATE_TABLE_USERS);
+        //创建权限表
+        db.execSQL(CREATE_TABLE_RIGHTS);
+        //创建用户权限分配表
+        db.execSQL(CREATE_TABLE_USER_RIGHTS);
+    }
+
+    @Override
+    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+
+    }
+}

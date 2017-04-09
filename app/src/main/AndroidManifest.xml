@@ -17,6 +17,8 @@
             </intent-filter>
         </activity>
         <activity android:name=".AllUsersActivity" android:label="@string/all_users"/>
+        <activity android:name=".userRights.UserRightsActivity"/>
+        <activity android:name=".addNewUser.AddNewUserActivity" android:label="@string/add_new_user"/>
     </application>
 
 </manifest>

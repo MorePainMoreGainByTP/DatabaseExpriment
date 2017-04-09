@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/search"
+        android:icon="@mipmap/search_bar"
+        android:title="@string/search_users"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/delete"
+        android:icon="@mipmap/delete"
+        android:title="@string/search_users"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/logout"
+        android:icon="@mipmap/logout"
+        android:title="@string/logout"
+        app:showAsAction="never" />
+</menu>
