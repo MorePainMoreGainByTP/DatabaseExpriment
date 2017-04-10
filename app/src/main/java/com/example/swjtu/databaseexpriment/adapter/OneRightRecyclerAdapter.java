@@ -10,6 +10,7 @@ import android.widget.TextView;
 import com.example.swjtu.databaseexpriment.R;
 import com.example.swjtu.databaseexpriment.entity.Right;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -19,9 +20,16 @@ import java.util.List;
 public class OneRightRecyclerAdapter extends RecyclerView.Adapter<OneRightRecyclerAdapter.ViewHolder> {
 
     List<Right> rightList;
+    List<Right> childList;
 
-    public OneRightRecyclerAdapter(List<Right> rightList) {
+    public OneRightRecyclerAdapter(List<Right> rightList,String rightModule) {
         this.rightList = rightList;
+        childList = new ArrayList<>();
+        for(int i = 0 ; i < rightList.size();i++){
+            if(rightList.get(i).getModule().equals(rightModule)){
+                childList.add(rightList.get(i));
+            }
+        }
     }
 
     @Override
@@ -33,13 +41,13 @@ public class OneRightRecyclerAdapter extends RecyclerView.Adapter<OneRightRecycl
 
     @Override
     public void onBindViewHolder(OneRightRecyclerAdapter.ViewHolder holder, int position) {
-        Right right = rightList.get(position);
+        Right right = childList.get(position);
         holder.txtOneRight.setText(right.getRightName());
     }
 
     @Override
     public int getItemCount() {
-        return rightList.size();
+        return childList.size();
     }
 
     static class ViewHolder extends RecyclerView.ViewHolder {

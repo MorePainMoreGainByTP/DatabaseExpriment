@@ -3,6 +3,7 @@ package com.example.swjtu.databaseexpriment.userRights;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -49,6 +50,7 @@ public class RightsFragment extends Fragment implements CompoundButton.OnChecked
         View root = inflater.inflate(R.layout.fragment_rights, null);
         recyclerView = (RecyclerView) root.findViewById(R.id.recyclerRightsModule);
         recyclerView.setAdapter(new RightModuleRecyclerAdapter(rightList));
+        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity(),LinearLayoutManager.VERTICAL,false));
         selectAll = (CheckBox) root.findViewById(R.id.checkBoxSelectAll);
         selectAll.setOnCheckedChangeListener(this);
         txtAddOrDelete = (TextView) root.findViewById(R.id.txtAddOrDelete);
@@ -84,7 +86,7 @@ public class RightsFragment extends Fragment implements CompoundButton.OnChecked
                 for (int j = 0; j < grandCount; j++) {
                     View grandRoot = oneRight.getChildAt(j);
                     CheckBox checkBoxSelected = (CheckBox) grandRoot.findViewById(R.id.checkBoxSelected);
-                    checkBoxSelected.setChecked(true);
+                    checkBoxSelected.setChecked(false);
                 }
             }
         }

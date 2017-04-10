@@ -1,5 +1,7 @@
 package com.example.swjtu.databaseexpriment.adapter;
 
+import android.content.Context;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,6 +14,9 @@ import android.widget.TextView;
 import com.example.swjtu.databaseexpriment.R;
 import com.example.swjtu.databaseexpriment.entity.Right;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import static android.view.View.GONE;
@@ -23,13 +28,38 @@ import static android.view.View.GONE;
 public class RightModuleRecyclerAdapter extends RecyclerView.Adapter<RightModuleRecyclerAdapter.ViewHolder> {
 
     List<Right> rightList;
+    private Context context;
+    List<String> rightModuleList;
 
     public RightModuleRecyclerAdapter(List<Right> rightList) {
         this.rightList = rightList;
+        Collections.sort(rightList, new Comparator<Right>() {
+            @Override
+            public int compare(Right o1, Right o2) {
+                return o1.getModule().compareTo(o2.getModule());
+            }
+        });
+        rightModuleList = new ArrayList<>();
+        if (rightList.size() > 0) {
+            int index = 0;
+            String currStr = rightList.get(index).getModule();
+            while (index < rightList.size()) {
+                rightModuleList.add(currStr);
+                while (rightList.get(index).getModule().equals(currStr)) {
+                    index++;
+                    if (index >= rightList.size())
+                        break;
+                }
+                if (index >= rightList.size())
+                    break;
+                currStr = rightList.get(index).getModule();
+            }
+        }
     }
 
     @Override
     public RightModuleRecyclerAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        context = parent.getContext();
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_item_right_module, parent, false);
         ViewHolder viewHolder = new ViewHolder(view);
         return viewHolder;
@@ -37,8 +67,9 @@ public class RightModuleRecyclerAdapter extends RecyclerView.Adapter<RightModule
 
     @Override
     public void onBindViewHolder(final RightModuleRecyclerAdapter.ViewHolder holder, int position) {
-        holder.rightItem.setAdapter(new OneRightRecyclerAdapter(rightList));
-        holder.rightModule.setText(rightList.get(position).getModule());
+        holder.rightModule.setText(rightModuleList.get(position));
+        holder.rightItem.setAdapter(new OneRightRecyclerAdapter(rightList, rightModuleList.get(position)));
+        holder.rightItem.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false));
         holder.expanded.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -53,7 +84,7 @@ public class RightModuleRecyclerAdapter extends RecyclerView.Adapter<RightModule
 
     @Override
     public int getItemCount() {
-        return rightList.size();
+        return rightModuleList.size();
     }
 
     static class ViewHolder extends RecyclerView.ViewHolder {

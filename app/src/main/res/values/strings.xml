@@ -10,7 +10,7 @@
     <string name="search_users">搜索用户</string>
     <string name="delete_users">删除用户</string>
     <string name="add_users">新增</string>
-    <string name="logout">注销</string>
+    <string name="logout">注销账户</string>
     <string name="add_user">新增</string>
     <string name="username">用户名：</string>
     <string name="cancel">取消</string>
@@ -18,5 +18,13 @@
     <string name="select_all">全选</string>
     <string name="add_new_user">新增用户</string>
     <string name="add">添加</string>
+    <string name="add_right">增加权限</string>
+    <string name="right_no">权限编号</string>
+    <string name="right_name">权限名称</string>
+    <string name="right_module">模块名称</string>
+    <string name="win_name">页面名称</string>
+    <string name="update_pass">修改密码</string>
+    <string name="update">修改</string>
+    <string name="check_right">查看权限</string>
 
 </resources>

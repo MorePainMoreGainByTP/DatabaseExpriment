@@ -15,6 +15,7 @@ import android.widget.TextView;
 
 import com.example.swjtu.databaseexpriment.R;
 import com.example.swjtu.databaseexpriment.entity.User;
+import com.example.swjtu.databaseexpriment.updatePassword.UpdatePassActivity;
 import com.example.swjtu.databaseexpriment.userRights.UserRightsActivity;
 
 import java.util.List;
@@ -55,6 +56,7 @@ public class AllUsersRecyclerAdapter extends RecyclerView.Adapter<AllUsersRecycl
                                 context.startActivity(new Intent(context, UserRightsActivity.class).putExtra("user", userNames.get(position)));
                                 break;
                             case 1:
+                                context.startActivity(new Intent(context, UpdatePassActivity.class).putExtra("user", userNames.get(position)));
                                 break;
                         }
                     }

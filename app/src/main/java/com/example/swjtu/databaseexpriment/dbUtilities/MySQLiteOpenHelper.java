@@ -4,6 +4,7 @@ import android.content.Context;
 import android.database.DatabaseErrorHandler;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 /**
  * Created by tangpeng on 2017/2/18.
@@ -11,8 +12,10 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 public class MySQLiteOpenHelper extends SQLiteOpenHelper {
 
+    private static final String TAG = "MySQLiteOpenHelper";
+
     private static  final String CREATE_TABLE_USERS = "create table users(id integer primary key autoincrement,user_name varchar(20),password varchar(20))";
-    private static  final String CREATE_TABLE_RIGHTS = "create table rights(id integer primary key autoincrement,right_NO integer,module varchar(40),w_name varchar(40))";
+    private static  final String CREATE_TABLE_RIGHTS = "create table rights(id integer primary key autoincrement,right_NO integer,right_name varchar(20),right_module varchar(20),win_name varchar(255))";
     private static  final String CREATE_TABLE_USER_RIGHTS = "create table user_rights(id integer primary key autoincrement," +
             "user_ID integer references users(id) on update cascade on delete cascade,right_ID integer references rights(id) on update cascade on delete cascade)";
 
@@ -33,6 +36,7 @@ public class MySQLiteOpenHelper extends SQLiteOpenHelper {
         db.execSQL(CREATE_TABLE_RIGHTS);
         //创建用户权限分配表
         db.execSQL(CREATE_TABLE_USER_RIGHTS);
+        Log.i(TAG, "MySQLiteOpenHelper: 第一次使用数据库创建表");
     }
 
     @Override

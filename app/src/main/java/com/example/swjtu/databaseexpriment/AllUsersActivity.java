@@ -26,6 +26,7 @@ import android.widget.Toast;
 
 import com.example.swjtu.databaseexpriment.adapter.AllUsersRecyclerAdapter;
 import com.example.swjtu.databaseexpriment.addNewUser.AddNewUserActivity;
+import com.example.swjtu.databaseexpriment.addRight.AddRightActivity;
 import com.example.swjtu.databaseexpriment.dbUtilities.MySQLiteOpenHelper;
 import com.example.swjtu.databaseexpriment.entity.User;
 
@@ -146,7 +147,7 @@ public class AllUsersActivity extends AppCompatActivity {
                 ArrayList<Integer> itemIndex = new ArrayList<>();
                 ArrayList<String> deletedUsers = new ArrayList<>();
                 int childCount = allUsersRecyclerAdapter.getItemCount();
-                Log.i(TAG, "onClick: childCount "+childCount);
+                Log.i(TAG, "onClick: childCount " + childCount);
                 for (int i = 0; i < childCount; i++) {
                     View root = recyclerView.getChildAt(i);
                     if (((CheckBox) root.findViewById(R.id.checkBoxDelete)).isChecked()) {
@@ -155,14 +156,14 @@ public class AllUsersActivity extends AppCompatActivity {
                     }
                 }
                 if (itemIndex.size() > 0) {
-                    Log.i(TAG, itemIndex+"\n"+deletedUsers);
-                    Log.i(TAG, "userNames.size():"+userNames.size());
-                    Log.i(TAG, "userNames: "+userNames);
-                    for(User user:userNames){
-                        Log.i(TAG, "user: "+user);
+                    Log.i(TAG, itemIndex + "\n" + deletedUsers);
+                    Log.i(TAG, "userNames.size():" + userNames.size());
+                    Log.i(TAG, "userNames: " + userNames);
+                    for (User user : userNames) {
+                        Log.i(TAG, "user: " + user);
                     }
-                    for (int i = itemIndex.size()-1; i >= 0; i--) {
-                        userNames.remove((int)itemIndex.get(i));
+                    for (int i = itemIndex.size() - 1; i >= 0; i--) {
+                        userNames.remove((int) itemIndex.get(i));
                     }
                     allUsersRecyclerAdapter.notifyDataSetChanged();
                     deleteUsersFromDB(deletedUsers);
@@ -176,7 +177,10 @@ public class AllUsersActivity extends AppCompatActivity {
 
     //从数据库中删除用户
     private void deleteUsersFromDB(ArrayList<String> deletedUsers) {
-
+        mySQLiteOpenHelper.getReadableDatabase().execSQL("PRAGMA foreign_keys = ON");
+        for (String str : deletedUsers) {
+            mySQLiteOpenHelper.getReadableDatabase().execSQL("delete from users where user_name = ?", new String[]{str});
+        }
     }
 
     private void selectAll(boolean selected) {
@@ -233,6 +237,15 @@ public class AllUsersActivity extends AppCompatActivity {
             case R.id.search:
                 break;
             case R.id.logout:
+                break;
+            case R.id.addRight:
+                startActivity(new Intent(this, AddRightActivity.class));
+                break;
+            case R.id.checkRight:
+                Cursor cursor = mySQLiteOpenHelper.getReadableDatabase().rawQuery("select * from rights", new String[]{});
+                while (cursor != null && cursor.moveToNext()) {
+                    Log.i(TAG, "onOptionsItemSelected: 权限" + cursor.getInt(0) + "," + cursor.getInt(1) + "," + cursor.getString(2) + "," + "," + cursor.getString(3) + "," + "," + cursor.getString(4));
+                }
                 break;
         }
         return super.onOptionsItemSelected(item);
