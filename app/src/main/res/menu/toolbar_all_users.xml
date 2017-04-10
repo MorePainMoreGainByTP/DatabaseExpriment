@@ -17,8 +17,7 @@
         app:showAsAction="never" />
     <item
         android:id="@+id/checkRight"
-        android:icon="@mipmap/logout"
-        android:title="@string/logout"
+        android:title="@string/check_right"
         app:showAsAction="never" />
     <item
         android:id="@+id/logout"

@@ -106,7 +106,7 @@ public class AllUsersActivity extends AppCompatActivity {
         mySQLiteOpenHelper = new MySQLiteOpenHelper(this, "DBExperiment.db3", null, 1);
         Cursor cursor = mySQLiteOpenHelper.getReadableDatabase().rawQuery("select * from users", new String[]{});
         while (cursor != null && cursor.moveToNext()) {
-            User user = new User(cursor.getString(1), cursor.getString(2));
+            User user = new User(cursor.getInt(0), cursor.getString(1), cursor.getString(2));
             userNames.add(user);
         }
         if (cursor != null)
@@ -123,8 +123,10 @@ public class AllUsersActivity extends AppCompatActivity {
         switch (requestCode) {
             case 1:
                 if (resultCode == 1) {
-                    User user = new User(data.getStringExtra("userName"), data.getStringExtra("pass"));
-                    userNames.add(user);
+                    swipeRefreshLayout.setRefreshing(true);
+                    refreshCourses();
+                    userNames.clear();
+                    getUserNames();
                     allUsersRecyclerAdapter.notifyDataSetChanged();
                 }
                 break;

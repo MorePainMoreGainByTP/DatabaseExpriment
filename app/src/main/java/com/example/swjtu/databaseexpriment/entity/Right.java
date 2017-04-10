@@ -7,16 +7,26 @@ import java.io.Serializable;
  */
 
 public class Right implements Serializable{
+    private int ID; //主键
     private int rightNO;    //权限编号
     private String rightName;   //权限名
     private String module;  //模块名
     private String winName; //窗口名
 
-    public Right(int rightNO, String rightName, String module, String winName) {
+    public Right(int ID, int rightNO, String rightName, String module, String winName) {
+        this.ID = ID;
         this.rightNO = rightNO;
         this.rightName = rightName;
         this.module = module;
         this.winName = winName;
+    }
+
+    public int getID() {
+        return ID;
+    }
+
+    public void setID(int ID) {
+        this.ID = ID;
     }
 
     public int getRightNO() {

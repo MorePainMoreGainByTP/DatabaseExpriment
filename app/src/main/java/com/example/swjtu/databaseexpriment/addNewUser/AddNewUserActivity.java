@@ -70,8 +70,6 @@ public class AddNewUserActivity extends AppCompatActivity {
                     } else {
                         Toast.makeText(this, "添加成功", Toast.LENGTH_SHORT).show();
                         Intent intent = getIntent();
-                        intent.putExtra("userName", userName);
-                        intent.putExtra("pass", pass);
                         setResult(1, intent);
                         finish();
                     }

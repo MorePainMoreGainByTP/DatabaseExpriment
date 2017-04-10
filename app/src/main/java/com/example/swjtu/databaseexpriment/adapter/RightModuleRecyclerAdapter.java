@@ -39,7 +39,13 @@ public class RightModuleRecyclerAdapter extends RecyclerView.Adapter<RightModule
                 return o1.getModule().compareTo(o2.getModule());
             }
         });
-        rightModuleList = new ArrayList<>();
+        updateRightModuleList();
+    }
+
+    public void updateRightModuleList() {
+        if (rightModuleList == null)
+            rightModuleList = new ArrayList<>();
+        else rightModuleList.clear();
         if (rightList.size() > 0) {
             int index = 0;
             String currStr = rightList.get(index).getModule();
@@ -56,6 +62,7 @@ public class RightModuleRecyclerAdapter extends RecyclerView.Adapter<RightModule
             }
         }
     }
+
 
     @Override
     public RightModuleRecyclerAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
