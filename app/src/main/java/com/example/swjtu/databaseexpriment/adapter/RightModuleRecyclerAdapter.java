@@ -30,22 +30,27 @@ public class RightModuleRecyclerAdapter extends RecyclerView.Adapter<RightModule
     List<Right> rightList;
     private Context context;
     List<String> rightModuleList;
+    private boolean showCheckBox = false;
 
-    public RightModuleRecyclerAdapter(List<Right> rightList) {
+    public RightModuleRecyclerAdapter(List<Right> rightList, boolean showCheckBox) {
         this.rightList = rightList;
+        this.showCheckBox = showCheckBox;
+        updateRightModuleList();
+    }
+
+    //将权限按所属模块分类
+    public void updateRightModuleList() {
         Collections.sort(rightList, new Comparator<Right>() {
             @Override
             public int compare(Right o1, Right o2) {
                 return o1.getModule().compareTo(o2.getModule());
             }
         });
-        updateRightModuleList();
-    }
 
-    public void updateRightModuleList() {
         if (rightModuleList == null)
             rightModuleList = new ArrayList<>();
         else rightModuleList.clear();
+
         if (rightList.size() > 0) {
             int index = 0;
             String currStr = rightList.get(index).getModule();
@@ -75,7 +80,9 @@ public class RightModuleRecyclerAdapter extends RecyclerView.Adapter<RightModule
     @Override
     public void onBindViewHolder(final RightModuleRecyclerAdapter.ViewHolder holder, int position) {
         holder.rightModule.setText(rightModuleList.get(position));
-        holder.rightItem.setAdapter(new OneRightRecyclerAdapter(rightList, rightModuleList.get(position)));
+        OneRightRecyclerAdapter oneRightRecyclerAdapter = new OneRightRecyclerAdapter(rightList, rightModuleList.get(position), showCheckBox);
+        holder.rightItem.setAdapter(oneRightRecyclerAdapter);
+        oneRightRecyclerAdapter.notifyDataSetChanged();
         holder.rightItem.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false));
         holder.expanded.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override

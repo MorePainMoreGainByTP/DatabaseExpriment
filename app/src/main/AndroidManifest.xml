@@ -9,18 +9,29 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity">
+        <activity android:name=".loginPage.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".AllUsersActivity" android:label="@string/all_users"/>
-        <activity android:name=".userRights.UserRightsActivity"/>
-        <activity android:name=".addNewUser.AddNewUserActivity" android:label="@string/add_new_user"/>
-        <activity android:name=".addRight.AddRightActivity" android:label="@string/add_right"/>
-        <activity android:name=".updatePassword.UpdatePassActivity" android:label="@string/update_pass"/>
+        <activity
+            android:name=".AllUsersActivity"
+            android:label="@string/all_users" />
+        <activity android:name=".userRights.UserRightsActivity" />
+        <activity
+            android:name=".addNewUser.AddNewUserActivity"
+            android:label="@string/add_new_user" />
+        <activity
+            android:name=".addRight.AddRightActivity"
+            android:label="@string/add_right" />
+        <activity
+            android:name=".updatePassword.UpdatePassActivity"
+            android:label="@string/update_pass" />
+        <activity android:name=".userRights.GeneralUserRightsActivity" />
+        <activity android:name=".winName.UnknownActivity" />
+        <activity android:name=".manageRights.ManageRightsActivity" android:label="@string/manage_right"/>
     </application>
 
 </manifest>

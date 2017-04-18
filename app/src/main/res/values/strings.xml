@@ -1,7 +1,7 @@
 <resources>
-    <string name="app_name">DatabaseExpriment</string>
-    <string name="user_name">请输入用户名</string>
-    <string name="password">请输入密码</string>
+    <string name="app_name">DatabaseExperiment</string>
+    <string name="user_name">用户名</string>
+    <string name="password">密码</string>
     <string name="welcome_login">Welcome</string>
     <string name="login">登录</string>
     <string name="register">注册</string>
@@ -12,13 +12,14 @@
     <string name="add_users">新增</string>
     <string name="logout">注销账户</string>
     <string name="add_user">新增</string>
-    <string name="username">用户名：</string>
+    <string name="username">用户：</string>
     <string name="cancel">取消</string>
     <string name="delete">删除</string>
     <string name="select_all">全选</string>
     <string name="add_new_user">新增用户</string>
     <string name="add">添加</string>
     <string name="add_right">增加权限</string>
+    <string name="manage_right">权限管理</string>
     <string name="right_no">权限编号</string>
     <string name="right_name">权限名称</string>
     <string name="right_module">模块名称</string>
@@ -26,5 +27,9 @@
     <string name="update_pass">修改密码</string>
     <string name="update">修改</string>
     <string name="check_right">查看权限</string>
+    <string name="reserve_pass">记住密码</string>
+    <string name="user_login">用户登录</string>
+    <string name="manager">管理员</string>
+    <string name="general_user">用户</string>
 
 </resources>

@@ -65,7 +65,8 @@ public class UpdatePassActivity extends AppCompatActivity {
             } else {
                 try {
                     mySQLiteOpenHelper.getReadableDatabase().execSQL("update users set password = ? where user_name = ?",
-                            new String[]{newPass, userNameWrapper.getEditText().toString().trim()});
+                            new String[]{newPass, user.getUserName()});
+                    setResult(1,getIntent());
                     finish();
                     Toast.makeText(this, "修改成功", Toast.LENGTH_SHORT).show();
                 } catch (SQLException e) {

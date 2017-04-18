@@ -12,12 +12,8 @@
         android:title="@string/search_users"
         app:showAsAction="ifRoom" />
     <item
-        android:id="@+id/addRight"
-        android:title="@string/add_right"
-        app:showAsAction="never" />
-    <item
-        android:id="@+id/checkRight"
-        android:title="@string/check_right"
+        android:id="@+id/manageRights"
+        android:title="@string/manage_right"
         app:showAsAction="never" />
     <item
         android:id="@+id/logout"

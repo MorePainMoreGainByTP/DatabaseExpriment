@@ -26,9 +26,10 @@ import android.widget.Toast;
 
 import com.example.swjtu.databaseexpriment.adapter.AllUsersRecyclerAdapter;
 import com.example.swjtu.databaseexpriment.addNewUser.AddNewUserActivity;
-import com.example.swjtu.databaseexpriment.addRight.AddRightActivity;
 import com.example.swjtu.databaseexpriment.dbUtilities.MySQLiteOpenHelper;
 import com.example.swjtu.databaseexpriment.entity.User;
+import com.example.swjtu.databaseexpriment.loginPage.MainActivity;
+import com.example.swjtu.databaseexpriment.manageRights.ManageRightsActivity;
 
 import java.util.ArrayList;
 
@@ -123,13 +124,21 @@ public class AllUsersActivity extends AppCompatActivity {
         switch (requestCode) {
             case 1:
                 if (resultCode == 1) {
-                    swipeRefreshLayout.setRefreshing(true);
-                    refreshCourses();
                     userNames.clear();
                     getUserNames();
+                    allUsersRecyclerAdapter = new AllUsersRecyclerAdapter(userNames);
+                    recyclerView.setAdapter(allUsersRecyclerAdapter);
                     allUsersRecyclerAdapter.notifyDataSetChanged();
                 }
                 break;
+            case 2:
+                if (resultCode == 1) {//修改成功
+                    userNames.clear();
+                    getUserNames();
+                    allUsersRecyclerAdapter = new AllUsersRecyclerAdapter(userNames);
+                    recyclerView.setAdapter(allUsersRecyclerAdapter);
+                    allUsersRecyclerAdapter.notifyDataSetChanged();
+                }
         }
     }
 
@@ -222,7 +231,7 @@ public class AllUsersActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.toolbar_all_users, menu);
-        return super.onCreateOptionsMenu(menu);
+        return true;    //返回true使菜单可显示出来，否则不显示
     }
 
     @Override
@@ -239,15 +248,11 @@ public class AllUsersActivity extends AppCompatActivity {
             case R.id.search:
                 break;
             case R.id.logout:
+                startActivity(new Intent(AllUsersActivity.this, MainActivity.class).putExtra("logout", true));
+                finish();
                 break;
-            case R.id.addRight:
-                startActivity(new Intent(this, AddRightActivity.class));
-                break;
-            case R.id.checkRight:
-                Cursor cursor = mySQLiteOpenHelper.getReadableDatabase().rawQuery("select * from rights", new String[]{});
-                while (cursor != null && cursor.moveToNext()) {
-                    Log.i(TAG, "onOptionsItemSelected: 权限" + cursor.getInt(0) + "," + cursor.getInt(1) + "," + cursor.getString(2) + "," + "," + cursor.getString(3) + "," + "," + cursor.getString(4));
-                }
+            case R.id.manageRights:
+                startActivity(new Intent(this, ManageRightsActivity.class));
                 break;
         }
         return super.onOptionsItemSelected(item);

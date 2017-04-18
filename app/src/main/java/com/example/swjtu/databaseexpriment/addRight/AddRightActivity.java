@@ -1,6 +1,6 @@
 package com.example.swjtu.databaseexpriment.addRight;
 
-import android.content.Context;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputLayout;
@@ -9,7 +9,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
 import com.example.swjtu.databaseexpriment.R;
@@ -49,8 +48,8 @@ public class AddRightActivity extends AppCompatActivity {
         winNameInput = (TextInputLayout) findViewById(R.id.winNameWrapper);
         rightNOInput.setHint("权限编号");
         rightNameInput.setHint("权限名称");
-        rightModuleInput.setHint("权限所属模块名");
-        winNameInput.setHint("权限所属页面名");
+        rightModuleInput.setHint("所属模块");
+        winNameInput.setHint("所属页面");
     }
 
     public void addNewRight(View v) {
@@ -63,21 +62,46 @@ public class AddRightActivity extends AppCompatActivity {
         } else if (isEmpty(rightName)) {
             rightNameInput.setError("权限名称不能为空");
         } else if (isEmpty(rightModule)) {
-            rightModuleInput.setError("权限所属模块名不能为空");
+            rightModuleInput.setError("所属模块名不能为空");
         } else if (isEmpty(winName)) {
-            winNameInput.setError("权限所属页不能为空");
+            winNameInput.setError("所属页不能为空");
         } else {
             try {
                 int rightNo = Integer.parseInt(rightNO);
-                mySQLiteOpenHelper.getReadableDatabase().execSQL("insert into rights values(null,?,?,?,?)", new Object[]{rightNo, rightName, rightModule, winName});
-                Toast.makeText(this, "添加成功", Toast.LENGTH_SHORT).show();
-                finish();
+                if (!rightIsExist(rightNo)) {
+                    if (!nameIsExist(rightName)) {
+                        mySQLiteOpenHelper.getReadableDatabase().execSQL("insert into rights values(null,?,?,?,?)", new Object[]{rightNo, rightName, rightModule, winName});
+                        Toast.makeText(this, "添加成功", Toast.LENGTH_SHORT).show();
+                        setResult(1);
+                        finish();
+                    } else {
+                        Toast.makeText(this, "权限名重复", Toast.LENGTH_SHORT).show();
+                    }
+                } else {
+                    Toast.makeText(this, "编号重复", Toast.LENGTH_SHORT).show();
+                }
             } catch (NumberFormatException e) {
                 rightNOInput.setError("权限编号为整数");
             } catch (Exception e) {
                 Toast.makeText(this, "添加失败", Toast.LENGTH_SHORT).show();
             }
         }
+    }
+
+    private boolean rightIsExist(int NO) {
+        Cursor cursor = mySQLiteOpenHelper.getReadableDatabase().rawQuery("select * from rights where right_no = ?", new String[]{NO + ""});
+        if (cursor != null && cursor.moveToNext()) {
+            return true;
+        }
+        return false;
+    }
+
+    private boolean nameIsExist(String name) {
+        Cursor cursor = mySQLiteOpenHelper.getReadableDatabase().rawQuery("select * from rights where right_name = ?", new String[]{name});
+        if (cursor != null && cursor.moveToNext()) {
+            return true;
+        }
+        return false;
     }
 
 
@@ -96,12 +120,4 @@ public class AddRightActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    //隐藏软键盘
-    private void hideKeyboard() {
-        View view = getCurrentFocus();
-        if (view != null) {
-            ((InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE)).
-                    hideSoftInputFromWindow(view.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
-        }
-    }
 }

@@ -60,4 +60,15 @@ public class Right implements Serializable{
     public void setWinName(String winName) {
         this.winName = winName;
     }
+
+    @Override
+    public String toString() {
+        return "Right{" +
+                "ID=" + ID +
+                ", rightNO=" + rightNO +
+                ", rightName='" + rightName + '\'' +
+                ", module='" + module + '\'' +
+                ", winName='" + winName + '\'' +
+                '}';
+    }
 }
