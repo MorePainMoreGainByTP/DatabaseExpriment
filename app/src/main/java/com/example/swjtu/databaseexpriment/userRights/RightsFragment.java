@@ -57,6 +57,12 @@ public class RightsFragment extends Fragment implements CompoundButton.OnChecked
         return fragment;
     }
 
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        initRightList(allocated);
+    }
+
     //重新从数据库中获取权限
     public void initRightList(boolean allocated) {
         MySQLiteOpenHelper mySQLiteOpenHelper = new MySQLiteOpenHelper(getActivity(), "DBExperiment.db3", null, 1);
@@ -93,7 +99,7 @@ public class RightsFragment extends Fragment implements CompoundButton.OnChecked
         while (cursor3 != null && cursor3.moveToNext()) {
             Log.i(TAG, "initRightList: " + cursor3.getInt(0) + cursor3.getInt(1) + cursor3.getString(2) + cursor3.getString(3) + cursor3.getString(4));
         }*/
-        rightModuleRecyclerAdapter = new RightModuleRecyclerAdapter(rightList,true);
+        rightModuleRecyclerAdapter = new RightModuleRecyclerAdapter(rightList, true);
         recyclerView.setAdapter(rightModuleRecyclerAdapter);
         rightModuleRecyclerAdapter.notifyDataSetChanged();
     }
@@ -118,7 +124,7 @@ public class RightsFragment extends Fragment implements CompoundButton.OnChecked
         Bundle bundle = getArguments();
         allocated = bundle.getBoolean(KEY_ALLOCATED);
         recyclerView = (RecyclerView) root.findViewById(R.id.recyclerRightsModule);
-        initRightList(allocated);
+
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
 
         selectAll = (CheckBox) root.findViewById(R.id.checkBoxSelectAll);
@@ -177,12 +183,11 @@ public class RightsFragment extends Fragment implements CompoundButton.OnChecked
                 View grandRoot = oneRight.getChildAt(j);
                 CheckBox checkBoxSelected = (CheckBox) grandRoot.findViewById(R.id.checkBoxSelected);
                 if (checkBoxSelected.isChecked()) {
-                    TextView rightTxt = (TextView) oneRight.findViewById(R.id.txtOneRight);
+                    TextView rightTxt = (TextView) grandRoot.findViewById(R.id.txtOneRight);
                     String rightStr = rightTxt.getText().toString().trim();
                     for (Right right : rightList) {
                         if (right.getRightName().equals(rightStr)) {
                             rightID.add(right.getID());
-                            break;
                         }
                     }
                 }
@@ -210,6 +215,7 @@ public class RightsFragment extends Fragment implements CompoundButton.OnChecked
                     }
                 }).setNegativeButton("否", null).create().show();
             }
+            Log.i(TAG, "已选权限: " + rightID.toString());
         } else {
             Toast.makeText(getActivity(), "请选择权限", Toast.LENGTH_SHORT).show();
         }
