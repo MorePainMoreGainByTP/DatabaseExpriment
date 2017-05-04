@@ -32,10 +32,10 @@
     <string name="user_login">用户登录</string>
     <string name="manager">管理员</string>
     <string name="general_user">用户</string>
-    <string name="simple">简单型</string>
-    <string name="ordered">带序号</string>
-    <string name="code">带编码</string>
-    <string name="in_use">带在用标识</string>
+    <string name="simple">简单型编辑室</string>
+    <string name="ordered">带序号编辑室</string>
+    <string name="code">带编码图书类型</string>
+    <string name="in_use">带在用标识编辑室</string>
     <string name="info_name">信息名引用</string>
     <string name="primary_key">主键引用</string>
     <string name="code_ref">编码引用</string>
@@ -43,5 +43,6 @@
     <string name="order">序号</string>
     <string name="bjsName">编辑室名</string>
     <string name="use">是否在用</string>
+    <string name="book_type">图书类型</string>
 
 </resources>

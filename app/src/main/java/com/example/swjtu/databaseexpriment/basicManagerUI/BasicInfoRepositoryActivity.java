@@ -4,8 +4,11 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
+import android.widget.Toast;
 
 import com.example.swjtu.databaseexpriment.R;
 
@@ -26,6 +29,16 @@ public class BasicInfoRepositoryActivity extends AppCompatActivity {
                 Log.e(TAG, "uncaughtException: ", e);
             }
         });
+        setActionBar();
+    }
+
+    private void setActionBar() {
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+//        ActionBar actionBar = getSupportActionBar();
+//        if (actionBar != null) {
+//            actionBar.setDisplayHomeAsUpEnabled(true);
+//        }
     }
 
     public void onSimple(View v) {
@@ -38,5 +51,24 @@ public class BasicInfoRepositoryActivity extends AppCompatActivity {
 
     public void onInUse(View v) {
         startActivity(new Intent(this, TableWithUseActivity.class));
+    }
+
+    public void onCode(View v) {
+        startActivity(new Intent(this, BookTypeActivity.class));
+    }
+
+    private long lastTime;
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            if (Math.abs(System.currentTimeMillis() - lastTime) < 2000) {
+                finish();
+            } else {
+                Toast.makeText(this, "再按一次退出", Toast.LENGTH_SHORT).show();
+                lastTime = System.currentTimeMillis();
+            }
+        }
+        return true;
     }
 }

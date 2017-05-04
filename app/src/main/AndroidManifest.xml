@@ -49,8 +49,9 @@
             </intent-filter>
         </activity>
         <activity android:name=".basicManagerUI.SimpleTableActivity" />
-        <activity android:name=".basicManagerUI.TableWithOrderActivity"/>
-        <activity android:name=".basicManagerUI.TableWithUseActivity"/>
+        <activity android:name=".basicManagerUI.TableWithOrderActivity" />
+        <activity android:name=".basicManagerUI.TableWithUseActivity" />
+        <activity android:name=".basicManagerUI.BookTypeActivity" />
     </application>
 
 </manifest>

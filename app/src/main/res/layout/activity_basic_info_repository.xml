@@ -2,7 +2,16 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
+        app:popupTheme="@style/Theme.AppCompat.Light"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorPrimary"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -29,31 +38,33 @@
             android:layout_gravity="center_vertical"
             android:background="@drawable/btn_right_press" />
     </LinearLayout>
+
     <LinearLayout
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_marginTop="5dp"
-    android:background="@drawable/rect_bg_white_gray_press"
-    android:clickable="true"
-    android:gravity="center_vertical"
-    android:onClick="onOrdered"
-    android:orientation="horizontal"
-    android:padding="10dp">
-
-    <TextView
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
+        android:layout_marginTop="5dp"
+        android:background="@drawable/rect_bg_white_gray_press"
+        android:clickable="true"
         android:gravity="center_vertical"
-        android:text="@string/ordered"
-        android:textSize="@dimen/lTextSize" />
+        android:onClick="onOrdered"
+        android:orientation="horizontal"
+        android:padding="10dp">
 
-    <Button
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        android:layout_gravity="center_vertical"
-        android:background="@drawable/btn_right_press" />
-</LinearLayout>
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center_vertical"
+            android:text="@string/ordered"
+            android:textSize="@dimen/lTextSize" />
+
+        <Button
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_gravity="center_vertical"
+            android:background="@drawable/btn_right_press" />
+    </LinearLayout>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -79,6 +90,7 @@
             android:layout_gravity="center_vertical"
             android:background="@drawable/btn_right_press" />
     </LinearLayout>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -104,6 +116,7 @@
             android:layout_gravity="center_vertical"
             android:background="@drawable/btn_right_press" />
     </LinearLayout>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -129,6 +142,7 @@
             android:layout_gravity="center_vertical"
             android:background="@drawable/btn_right_press" />
     </LinearLayout>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -154,6 +168,7 @@
             android:layout_gravity="center_vertical"
             android:background="@drawable/btn_right_press" />
     </LinearLayout>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

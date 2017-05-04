@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <litepal>
     <dbname value="DataBaseExperiment" />
-    <version value="4" />
+    <version value="5" />
     <list>
         <mapping class="com.example.swjtu.databaseexpriment.entity.SimpleRight" />
         <mapping class="com.example.swjtu.databaseexpriment.entity.RightWithOrder" />
         <mapping class="com.example.swjtu.databaseexpriment.entity.BjsWithUse" />
+        <mapping class="com.example.swjtu.databaseexpriment.entity.BookType" />
     </list>
 </litepal>
