@@ -2,4 +2,13 @@
 <resources>
     <dimen name="txt_size_30">30sp</dimen>
     <dimen name="padding_20dp">20sp</dimen>
+    <dimen name="activity_horizontal_margin">16dp</dimen>
+    <dimen name="activity_vertical_margin">16dp</dimen>
+    <dimen name="ttTextSize">7sp</dimen>
+    <dimen name="tTextSize">10sp</dimen>
+    <dimen name="sTextSize">12sp</dimen>
+    <dimen name="mTextSize">15sp</dimen>
+    <dimen name="lTextSize">17sp</dimen>
+    <dimen name="xlTextSize">20sp</dimen>
+    <dimen name="xxlTextSize">24sp</dimen>
 </resources>

@@ -20,6 +20,7 @@
     <string name="add">添加</string>
     <string name="add_right">增加权限</string>
     <string name="manage_right">权限管理</string>
+    <string name="basic_info_repository">基本信息库</string>
     <string name="right_no">权限编号</string>
     <string name="right_name">权限名称</string>
     <string name="right_module">模块名称</string>
@@ -31,5 +32,12 @@
     <string name="user_login">用户登录</string>
     <string name="manager">管理员</string>
     <string name="general_user">用户</string>
+    <string name="simple">简单型</string>
+    <string name="ordered">带序号</string>
+    <string name="code">带编码</string>
+    <string name="in_use">带在用标识</string>
+    <string name="info_name">信息名引用</string>
+    <string name="primary_key">主键引用</string>
+    <string name="code_ref">编码引用</string>
 
 </resources>

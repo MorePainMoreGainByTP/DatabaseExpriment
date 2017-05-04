@@ -16,6 +16,10 @@
         android:title="@string/manage_right"
         app:showAsAction="never" />
     <item
+        android:id="@+id/basicInfoRepository"
+        android:title="@string/basic_info_repository"
+        app:showAsAction="never" />
+    <item
         android:id="@+id/logout"
         android:icon="@mipmap/logout"
         android:title="@string/logout"

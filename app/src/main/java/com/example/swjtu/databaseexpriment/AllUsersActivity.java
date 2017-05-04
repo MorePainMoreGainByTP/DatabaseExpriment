@@ -26,6 +26,7 @@ import android.widget.Toast;
 
 import com.example.swjtu.databaseexpriment.adapter.AllUsersRecyclerAdapter;
 import com.example.swjtu.databaseexpriment.addNewUser.AddNewUserActivity;
+import com.example.swjtu.databaseexpriment.basicManagerUI.BasicInfoRepositoryActivity;
 import com.example.swjtu.databaseexpriment.dbUtilities.MySQLiteOpenHelper;
 import com.example.swjtu.databaseexpriment.entity.User;
 import com.example.swjtu.databaseexpriment.loginPage.MainActivity;
@@ -253,6 +254,9 @@ public class AllUsersActivity extends AppCompatActivity {
                 break;
             case R.id.manageRights:
                 startActivity(new Intent(this, ManageRightsActivity.class));
+                break;
+            case R.id.basicInfoRepository:
+                startActivity(new Intent(this, BasicInfoRepositoryActivity.class));
                 break;
         }
         return super.onOptionsItemSelected(item);
