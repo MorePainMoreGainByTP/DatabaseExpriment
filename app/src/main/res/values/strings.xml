@@ -39,5 +39,8 @@
     <string name="info_name">信息名引用</string>
     <string name="primary_key">主键引用</string>
     <string name="code_ref">编码引用</string>
+    <string name="id">ID</string>
+    <string name="order">序号</string>
+    <string name="bjsName">编辑室名</string>
 
 </resources>

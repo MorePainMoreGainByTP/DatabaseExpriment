@@ -49,6 +49,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".basicManagerUI.SimpleTableActivity" />
+        <activity android:name=".basicManagerUI.TableWithOrderActivity"/>
     </application>
 
 </manifest>

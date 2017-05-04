@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<litepal >
-    <dbname value="DataBaseExperiment"/>
-    <version value="1"/>
+<litepal>
+    <dbname value="DataBaseExperiment" />
+    <version value="2" />
     <list>
-        <mapping class="com.example.swjtu.databaseexpriment.entity.SimpleRight"/>
+        <mapping class="com.example.swjtu.databaseexpriment.entity.SimpleRight" />
+        <mapping class="com.example.swjtu.databaseexpriment.entity.RightWithOrder" />
     </list>
 </litepal>

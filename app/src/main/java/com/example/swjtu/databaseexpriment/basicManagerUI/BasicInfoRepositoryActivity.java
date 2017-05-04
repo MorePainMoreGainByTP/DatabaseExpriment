@@ -15,7 +15,7 @@ import com.example.swjtu.databaseexpriment.R;
 
 public class BasicInfoRepositoryActivity extends AppCompatActivity {
     private static final String TAG = "BasicInfoRepositoryActi";
-    
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -23,12 +23,16 @@ public class BasicInfoRepositoryActivity extends AppCompatActivity {
         Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
             @Override
             public void uncaughtException(Thread t, Throwable e) {
-                Log.e(TAG, "uncaughtException: ",e );
+                Log.e(TAG, "uncaughtException: ", e);
             }
         });
     }
 
-    public void onSimple(View v){
-        startActivity(new Intent(this,SimpleTableActivity.class));
+    public void onSimple(View v) {
+        startActivity(new Intent(this, SimpleTableActivity.class));
+    }
+
+    public void onOrdered(View v) {
+        startActivity(new Intent(this, TableWithOrderActivity.class));
     }
 }

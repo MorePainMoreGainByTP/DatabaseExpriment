@@ -18,8 +18,8 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.example.swjtu.databaseexpriment.R;
-import com.example.swjtu.databaseexpriment.adapter.SimpleRightAdapter;
-import com.example.swjtu.databaseexpriment.entity.SimpleRight;
+import com.example.swjtu.databaseexpriment.adapter.RightWithOrderAdapter;
+import com.example.swjtu.databaseexpriment.entity.RightWithOrder;
 
 import org.litepal.crud.DataSupport;
 
@@ -31,22 +31,22 @@ import static android.view.View.GONE;
  * Created by tangpeng on 2017/4/27.
  */
 
-public class SimpleTableActivity extends AppCompatActivity {
+public class TableWithOrderActivity extends AppCompatActivity {
 
     public RecyclerView recyclerView;
     private ActionBar actionBar;
     public LinearLayout addNewLayout, deleteLayout;
-    private EditText editRightName;
+    private EditText editRightName, editNum;
 
-    private SimpleRightAdapter simpleRightAdapter;
-    private List<SimpleRight> simpleRightList;
+    private RightWithOrderAdapter rightWithOrderAdapter;
+    private List<RightWithOrder> rightWithOrderList;
     public int selectedCount = 0;
     private int allCount = 0;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_simple_table);
+        setContentView(R.layout.activity_table_with_order);
         setActionBar();
         getViews();
         initData();
@@ -64,26 +64,27 @@ public class SimpleTableActivity extends AppCompatActivity {
     private void getViews() {
         recyclerView = (RecyclerView) findViewById(R.id.recyclerSimpleTable);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        editRightName = (EditText) findViewById(R.id.editRightName);
+        editRightName = (EditText) findViewById(R.id.editBjsName);
+        editNum = (EditText) findViewById(R.id.editNum);
         deleteLayout = (LinearLayout) findViewById(R.id.deleteLayout);
         addNewLayout = (LinearLayout) findViewById(R.id.addNewLayout);
         deleteLayout.setVisibility(GONE);
     }
 
     private void initData() {
-        simpleRightList = DataSupport.findAll(SimpleRight.class);
-        simpleRightAdapter = new SimpleRightAdapter(simpleRightList);
-        recyclerView.setAdapter(simpleRightAdapter);
-        allCount = simpleRightList.size();
+        rightWithOrderList = DataSupport.select("*").order("num").find(RightWithOrder.class);
+        rightWithOrderAdapter = new RightWithOrderAdapter(rightWithOrderList);
+        recyclerView.setAdapter(rightWithOrderAdapter);
+        allCount = rightWithOrderList.size();
         updateAllCount();
     }
 
     private void refreshRecycler() {
-        simpleRightList.clear();
-        simpleRightList = DataSupport.findAll(SimpleRight.class);
-        simpleRightAdapter = new SimpleRightAdapter(simpleRightList);
-        recyclerView.setAdapter(simpleRightAdapter);
-        allCount = simpleRightList.size();
+        rightWithOrderList.clear();
+        rightWithOrderList = DataSupport.select("*").order("num").find(RightWithOrder.class);
+        rightWithOrderAdapter = new RightWithOrderAdapter(rightWithOrderList);
+        recyclerView.setAdapter(rightWithOrderAdapter);
+        allCount = rightWithOrderList.size();
     }
 
     /**
@@ -91,25 +92,41 @@ public class SimpleTableActivity extends AppCompatActivity {
      */
     public void onAddNewRight(View v) {
         String rightName = editRightName.getText().toString().trim();
-        if (!TextUtils.isEmpty(rightName)) {
-            List<SimpleRight> simpleRights = DataSupport.select("*").where("bjsName = ?", rightName).find(SimpleRight.class);
-            if (simpleRights.size() > 0) {
+        String num = editNum.getText().toString().trim();
+        if (!TextUtils.isEmpty(rightName) && !TextUtils.isEmpty(num)) {
+            List<RightWithOrder> rightWithOrders = DataSupport.select("*").where("bjsName = ?", rightName).find(RightWithOrder.class);
+            if (rightWithOrders.size() > 0) {
                 Toast.makeText(this, "编辑室已存在", Toast.LENGTH_SHORT).show();
             } else {
-                SimpleRight simpleRight = new SimpleRight();
-                simpleRight.setBjsName(rightName);
-                simpleRight.save();
+                RightWithOrder rightWithOrder = new RightWithOrder();
+                rightWithOrder.setBjsName(rightName);
+                rightWithOrder.setNum(Integer.parseInt(num));
+                rightWithOrder.save();
                 editRightName.setText("");
-                //hideKeyboard();
-                simpleRightAdapter.checked.add(false);
-                simpleRightList.add(simpleRight);
-                simpleRightAdapter.notifyItemInserted(simpleRightList.size() - 1);
-                recyclerView.scrollToPosition(simpleRightList.size() - 1);
+                editNum.setText("");
+                int position = rightWithOrderList.size();
+                for (int i = 0; i < rightWithOrderList.size(); i++) {
+                    if (rightWithOrderList.get(i).getNum() > Integer.parseInt(num)) {
+                        position = i;
+                        break;
+                    }
+                }
+                rightWithOrderAdapter.checked.add(false);
+                if (position == rightWithOrderList.size()) {
+                    rightWithOrderList.add(rightWithOrder);
+                    rightWithOrderAdapter.notifyItemInserted(rightWithOrderList.size() - 1);
+                    recyclerView.scrollToPosition(rightWithOrderList.size() - 1);
+                } else {
+                    rightWithOrderList.add(position, rightWithOrder);
+                    rightWithOrderAdapter.notifyItemInserted(position);
+                    recyclerView.scrollToPosition(position);
+                }
+
                 updateAllCount();
-                allCount = simpleRightList.size();
+                allCount = rightWithOrderList.size();
             }
         } else {
-            Toast.makeText(this, "编辑室不能为空", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "编辑室与序号不能为空", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -120,19 +137,16 @@ public class SimpleTableActivity extends AppCompatActivity {
         if (selectedCount == 0) {
             Toast.makeText(this, "无选中项", Toast.LENGTH_SHORT).show();
         } else {
-            for (int i = simpleRightAdapter.checked.size() - 1; i >= 0; i--) {
-                //View view = recyclerView.getChildAt(i);
-                //CheckBox checkBox = (CheckBox) view.findViewById(R.id.checkbox_delete);
-                if (simpleRightAdapter.checked.get(i)) {
-                    String bjsName = simpleRightList.get(i).getBjsName();
-                    DataSupport.deleteAll(SimpleRight.class, "bjsName = ?", bjsName);
-                    simpleRightAdapter.checked.remove(i);
-                    simpleRightList.remove(i);
+            for (int i = rightWithOrderAdapter.checked.size() - 1; i >= 0; i--) {
+                if (rightWithOrderAdapter.checked.get(i)) {
+                    String bjsName = rightWithOrderList.get(i).getBjsName();
+                    int num = rightWithOrderList.get(i).getNum();
+                    DataSupport.deleteAll(RightWithOrder.class, "bjsName = ? and num = ?", bjsName, "" + num);
+                    rightWithOrderAdapter.checked.remove(i);
+                    rightWithOrderList.remove(i);
                 }
             }
-            simpleRightAdapter.notifyDataSetChanged();
-            // addNewLayout.setVisibility(View.VISIBLE);
-            // deleteLayout.setVisibility(View.INVISIBLE);
+            rightWithOrderAdapter.notifyDataSetChanged();
             selectedCount = 0;
             updateSelectedCount();
         }
@@ -169,8 +183,8 @@ public class SimpleTableActivity extends AppCompatActivity {
     }
 
     private void clearSelected() {
-        for (int i = 0; i < simpleRightAdapter.checked.size(); i++) {
-            simpleRightAdapter.checked.set(i, false);
+        for (int i = 0; i < rightWithOrderAdapter.checked.size(); i++) {
+            rightWithOrderAdapter.checked.set(i, false);
         }
         selectedCount = 0;
     }
@@ -194,7 +208,6 @@ public class SimpleTableActivity extends AppCompatActivity {
                 updateSelectedCount();
                 addNewLayout.setVisibility(View.INVISIBLE);
                 deleteLayout.setVisibility(View.VISIBLE);
-                //Toast.makeText(this, "allCount:" + allCount, Toast.LENGTH_SHORT).show();
                 showCheckBox();
                 break;
         }
