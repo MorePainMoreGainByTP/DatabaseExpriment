@@ -35,4 +35,8 @@ public class BasicInfoRepositoryActivity extends AppCompatActivity {
     public void onOrdered(View v) {
         startActivity(new Intent(this, TableWithOrderActivity.class));
     }
+
+    public void onInUse(View v) {
+        startActivity(new Intent(this, TableWithUseActivity.class));
+    }
 }

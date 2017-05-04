@@ -50,6 +50,7 @@
         </activity>
         <activity android:name=".basicManagerUI.SimpleTableActivity" />
         <activity android:name=".basicManagerUI.TableWithOrderActivity"/>
+        <activity android:name=".basicManagerUI.TableWithUseActivity"/>
     </application>
 
 </manifest>

@@ -40,9 +40,17 @@
             android:id="@+id/txt_bjs_name"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="2"
+            android:layout_weight="3"
             android:gravity="center"
             android:text="@string/bjsName" />
+
+        <TextView
+            android:id="@+id/txtInUse"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="@string/use" />
     </LinearLayout>
 
     <View
@@ -93,6 +101,14 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="3"
                 android:hint="编辑室名" />
+
+            <ToggleButton
+                android:id="@+id/toggleUse"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textOff="否"
+                android:textOn="是" />
 
             <Button
                 android:layout_width="0dp"

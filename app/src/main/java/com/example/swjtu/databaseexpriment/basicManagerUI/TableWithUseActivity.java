@@ -16,10 +16,11 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Toast;
+import android.widget.ToggleButton;
 
 import com.example.swjtu.databaseexpriment.R;
-import com.example.swjtu.databaseexpriment.adapter.RightWithOrderAdapter;
-import com.example.swjtu.databaseexpriment.entity.RightWithOrder;
+import com.example.swjtu.databaseexpriment.adapter.BjsWithUseAdapter;
+import com.example.swjtu.databaseexpriment.entity.BjsWithUse;
 
 import org.litepal.crud.DataSupport;
 
@@ -31,22 +32,23 @@ import static android.view.View.GONE;
  * Created by tangpeng on 2017/4/27.
  */
 
-public class TableWithOrderActivity extends AppCompatActivity {
+public class TableWithUseActivity extends AppCompatActivity {
 
     public RecyclerView recyclerView;
     private ActionBar actionBar;
     public LinearLayout addNewLayout, deleteLayout;
     private EditText editRightName, editNum;
+    private ToggleButton toggleUse;
 
-    private RightWithOrderAdapter rightWithOrderAdapter;
-    private List<RightWithOrder> rightWithOrderList;
+    private BjsWithUseAdapter bjsWithUseAdapter;
+    private List<BjsWithUse> bjsWithUses;
     public int selectedCount = 0;
     private int allCount = 0;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_table_with_order);
+        setContentView(R.layout.activity_table_with_use);
         setActionBar();
         getViews();
         initData();
@@ -66,25 +68,26 @@ public class TableWithOrderActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         editRightName = (EditText) findViewById(R.id.editBjsName);
         editNum = (EditText) findViewById(R.id.editNum);
+        toggleUse = (ToggleButton) findViewById(R.id.toggleUse);
         deleteLayout = (LinearLayout) findViewById(R.id.deleteLayout);
         addNewLayout = (LinearLayout) findViewById(R.id.addNewLayout);
         deleteLayout.setVisibility(GONE);
     }
 
     private void initData() {
-        rightWithOrderList = DataSupport.select("*").order("num").find(RightWithOrder.class);
-        rightWithOrderAdapter = new RightWithOrderAdapter(rightWithOrderList);
-        recyclerView.setAdapter(rightWithOrderAdapter);
-        allCount = rightWithOrderList.size();
+        bjsWithUses = DataSupport.select("*").order("num").find(BjsWithUse.class);
+        bjsWithUseAdapter = new BjsWithUseAdapter(bjsWithUses);
+        recyclerView.setAdapter(bjsWithUseAdapter);
+        allCount = bjsWithUses.size();
         updateAllCount();
     }
 
     public void refreshRecycler() {
-        rightWithOrderList.clear();
-        rightWithOrderList = DataSupport.select("*").order("num").find(RightWithOrder.class);
-        rightWithOrderAdapter = new RightWithOrderAdapter(rightWithOrderList);
-        recyclerView.setAdapter(rightWithOrderAdapter);
-        allCount = rightWithOrderList.size();
+        bjsWithUses.clear();
+        bjsWithUses = DataSupport.select("*").order("num").find(BjsWithUse.class);
+        bjsWithUseAdapter = new BjsWithUseAdapter(bjsWithUses);
+        recyclerView.setAdapter(bjsWithUseAdapter);
+        allCount = bjsWithUses.size();
     }
 
     /**
@@ -94,36 +97,36 @@ public class TableWithOrderActivity extends AppCompatActivity {
         String rightName = editRightName.getText().toString().trim();
         String num = editNum.getText().toString().trim();
         if (!TextUtils.isEmpty(rightName) && !TextUtils.isEmpty(num)) {
-            List<RightWithOrder> rightWithOrders = DataSupport.select("*").where("bjsName = ?", rightName).find(RightWithOrder.class);
+            List<BjsWithUse> rightWithOrders = DataSupport.select("*").where("bjsName = ?", rightName).find(BjsWithUse.class);
             if (rightWithOrders.size() > 0) {
                 Toast.makeText(this, "编辑室已存在", Toast.LENGTH_SHORT).show();
             } else {
-                RightWithOrder rightWithOrder = new RightWithOrder();
+                BjsWithUse rightWithOrder = new BjsWithUse();
                 rightWithOrder.setBjsName(rightName);
                 rightWithOrder.setNum(Integer.parseInt(num));
+                rightWithOrder.setIsUse(toggleUse.isChecked()?"是":"否");
                 rightWithOrder.save();
                 editRightName.setText("");
                 editNum.setText("");
-                int position = rightWithOrderList.size();
-                for (int i = 0; i < rightWithOrderList.size(); i++) {
-                    if (rightWithOrderList.get(i).getNum() > Integer.parseInt(num)) {
+                int position = bjsWithUses.size();
+                for (int i = 0; i < bjsWithUses.size(); i++) {
+                    if (bjsWithUses.get(i).getNum() > Integer.parseInt(num)) {
                         position = i;
                         break;
                     }
                 }
-                rightWithOrderAdapter.checked.add(false);
-                if (position == rightWithOrderList.size()) {
-                    rightWithOrderList.add(rightWithOrder);
-                    rightWithOrderAdapter.notifyItemInserted(rightWithOrderList.size() - 1);
-                    recyclerView.scrollToPosition(rightWithOrderList.size() - 1);
+                bjsWithUseAdapter.checked.add(false);
+                if (position == bjsWithUses.size()) {
+                    bjsWithUses.add(rightWithOrder);
+                    bjsWithUseAdapter.notifyItemInserted(bjsWithUses.size() - 1);
+                    recyclerView.scrollToPosition(bjsWithUses.size() - 1);
                 } else {
-                    rightWithOrderList.add(position, rightWithOrder);
-                    rightWithOrderAdapter.notifyItemInserted(position);
+                    bjsWithUses.add(position, rightWithOrder);
+                    bjsWithUseAdapter.notifyItemInserted(position);
                     recyclerView.scrollToPosition(position);
                 }
-
                 updateAllCount();
-                allCount = rightWithOrderList.size();
+                allCount = bjsWithUses.size();
             }
         } else {
             Toast.makeText(this, "编辑室与序号不能为空", Toast.LENGTH_SHORT).show();
@@ -137,16 +140,16 @@ public class TableWithOrderActivity extends AppCompatActivity {
         if (selectedCount == 0) {
             Toast.makeText(this, "无选中项", Toast.LENGTH_SHORT).show();
         } else {
-            for (int i = rightWithOrderAdapter.checked.size() - 1; i >= 0; i--) {
-                if (rightWithOrderAdapter.checked.get(i)) {
-                    String bjsName = rightWithOrderList.get(i).getBjsName();
-                    int num = rightWithOrderList.get(i).getNum();
-                    DataSupport.deleteAll(RightWithOrder.class, "bjsName = ? and num = ?", bjsName, "" + num);
-                    rightWithOrderAdapter.checked.remove(i);
-                    rightWithOrderList.remove(i);
+            for (int i = bjsWithUseAdapter.checked.size() - 1; i >= 0; i--) {
+                if (bjsWithUseAdapter.checked.get(i)) {
+                    String bjsName = bjsWithUses.get(i).getBjsName();
+                    int num = bjsWithUses.get(i).getNum();
+                    DataSupport.deleteAll(BjsWithUse.class, "bjsName = ? and num = ?", bjsName, "" + num);
+                    bjsWithUseAdapter.checked.remove(i);
+                    bjsWithUses.remove(i);
                 }
             }
-            rightWithOrderAdapter.notifyDataSetChanged();
+            bjsWithUseAdapter.notifyDataSetChanged();
             selectedCount = 0;
             updateSelectedCount();
         }
@@ -183,8 +186,8 @@ public class TableWithOrderActivity extends AppCompatActivity {
     }
 
     private void clearSelected() {
-        for (int i = 0; i < rightWithOrderAdapter.checked.size(); i++) {
-            rightWithOrderAdapter.checked.set(i, false);
+        for (int i = 0; i < bjsWithUseAdapter.checked.size(); i++) {
+            bjsWithUseAdapter.checked.set(i, false);
         }
         selectedCount = 0;
     }

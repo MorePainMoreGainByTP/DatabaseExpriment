@@ -42,5 +42,6 @@
     <string name="id">ID</string>
     <string name="order">序号</string>
     <string name="bjsName">编辑室名</string>
+    <string name="use">是否在用</string>
 
 </resources>
