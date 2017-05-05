@@ -53,6 +53,7 @@
         <activity android:name=".basicManagerUI.TableWithUseActivity" />
         <activity android:name=".basicManagerUI.BookTypeActivity" />
         <activity android:name=".basicManagerUI.BookRefNameActivity"/>
+        <activity android:name=".basicManagerUI.BookRefKeyActivity"/>
     </application>
 
 </manifest>

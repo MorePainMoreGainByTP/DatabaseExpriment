@@ -42,8 +42,10 @@
     <string name="id">ID</string>
     <string name="order">序号</string>
     <string name="bjsName">编辑室名</string>
+    <string name="bjsName_id">编辑室ID</string>
     <string name="use">是否在用</string>
     <string name="book_type">图书类型</string>
+    <string name="book_type_id">图书类型ID</string>
     <string name="book_name">书名</string>
 
 </resources>
