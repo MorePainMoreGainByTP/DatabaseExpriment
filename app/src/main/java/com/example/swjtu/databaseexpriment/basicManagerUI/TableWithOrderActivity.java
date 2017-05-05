@@ -121,9 +121,8 @@ public class TableWithOrderActivity extends AppCompatActivity {
                     rightWithOrderAdapter.notifyItemInserted(position);
                     recyclerView.scrollToPosition(position);
                 }
-
-                updateAllCount();
                 allCount = rightWithOrderList.size();
+                updateAllCount();
             }
         } else {
             Toast.makeText(this, "编辑室与序号不能为空", Toast.LENGTH_SHORT).show();

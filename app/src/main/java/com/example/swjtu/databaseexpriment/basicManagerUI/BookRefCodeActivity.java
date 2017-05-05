@@ -13,16 +13,21 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.example.swjtu.databaseexpriment.R;
-import com.example.swjtu.databaseexpriment.adapter.SimpleRightAdapter;
-import com.example.swjtu.databaseexpriment.entity.SimpleRight;
+import com.example.swjtu.databaseexpriment.adapter.BookRefCodeAdapter;
+import com.example.swjtu.databaseexpriment.entity.BjsWithUse;
+import com.example.swjtu.databaseexpriment.entity.BookRefCode;
+import com.example.swjtu.databaseexpriment.entity.BookType;
 
 import org.litepal.crud.DataSupport;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static android.view.View.GONE;
@@ -31,22 +36,23 @@ import static android.view.View.GONE;
  * Created by tangpeng on 2017/4/27.
  */
 
-public class SimpleTableActivity extends AppCompatActivity {
+public class BookRefCodeActivity extends AppCompatActivity {
 
     public RecyclerView recyclerView;
     private ActionBar actionBar;
     public LinearLayout addNewLayout, deleteLayout;
-    private EditText editRightName;
+    private EditText editShuM;
+    private Spinner spinnerBjsID, spinnerBookCode;
 
-    private SimpleRightAdapter simpleRightAdapter;
-    private List<SimpleRight> simpleRightList;
+    private BookRefCodeAdapter bookRefCodeAdapter;
+    private List<BookRefCode> bookRefCodeList;
     public int selectedCount = 0;
     private int allCount = 0;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_simple_table);
+        setContentView(R.layout.activity_book_ref_code);
         setActionBar();
         getViews();
         initData();
@@ -64,82 +70,102 @@ public class SimpleTableActivity extends AppCompatActivity {
     private void getViews() {
         recyclerView = (RecyclerView) findViewById(R.id.recyclerSimpleTable);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        editRightName = (EditText) findViewById(R.id.editRightName);
+        editShuM = (EditText) findViewById(R.id.editShuM);
+        spinnerBjsID = (Spinner) findViewById(R.id.spinnerBjsID);
+        spinnerBookCode = (Spinner) findViewById(R.id.spinnerBookCode);
         deleteLayout = (LinearLayout) findViewById(R.id.deleteLayout);
         addNewLayout = (LinearLayout) findViewById(R.id.addNewLayout);
         deleteLayout.setVisibility(GONE);
     }
 
     private void initData() {
-        simpleRightList = DataSupport.findAll(SimpleRight.class);
-        simpleRightAdapter = new SimpleRightAdapter(simpleRightList);
-        recyclerView.setAdapter(simpleRightAdapter);
-        allCount = simpleRightList.size();
+        bookRefCodeList = DataSupport.findAll(BookRefCode.class);
+        bookRefCodeAdapter = new BookRefCodeAdapter(bookRefCodeList);
+        recyclerView.setAdapter(bookRefCodeAdapter);
+        allCount = bookRefCodeList.size();
+        initSpinner();
         updateAllCount();
     }
 
-    private void refreshRecycler() {
-        simpleRightList.clear();
-        simpleRightList = DataSupport.findAll(SimpleRight.class);
-        simpleRightAdapter = new SimpleRightAdapter(simpleRightList);
-        recyclerView.setAdapter(simpleRightAdapter);
-        allCount = simpleRightList.size();
+    private void initSpinner() {
+        List<BjsWithUse> bjsWithUses = DataSupport.select("*").where("isUse = ?", "是").find(BjsWithUse.class);
+        List<Integer> bjsIDs = new ArrayList<>();
+        for (BjsWithUse bjsWithUse : bjsWithUses) {
+            bjsIDs.add(bjsWithUse.getId());
+        }
+        spinnerBjsID.setAdapter(new ArrayAdapter<Integer>(this, android.R.layout.simple_list_item_1, bjsIDs));
+
+        List<BookType> bookTypes = DataSupport.findAll(BookType.class);
+        List<String> bookCodes = new ArrayList<>();
+        for (BookType bookType1 : bookTypes) {
+            bookCodes.add(bookType1.getCode());
+        }
+        spinnerBookCode.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, bookCodes));
+    }
+
+    public void refreshRecycler() {
+        bookRefCodeList.clear();
+        bookRefCodeList = DataSupport.findAll(BookRefCode.class);
+        bookRefCodeAdapter = new BookRefCodeAdapter(bookRefCodeList);
+        recyclerView.setAdapter(bookRefCodeAdapter);
+        allCount = bookRefCodeList.size();
     }
 
     /**
-     * @param v 添加新的编辑室
+     * @param v 添加新的书名
      */
     public void onAddNewRight(View v) {
-        String rightName = editRightName.getText().toString().trim();
-        if (!TextUtils.isEmpty(rightName)) {
-            List<SimpleRight> simpleRights = DataSupport.select("*").where("bjsName = ?", rightName).find(SimpleRight.class);
-            if (simpleRights.size() > 0) {
-                Toast.makeText(this, "编辑室已存在", Toast.LENGTH_SHORT).show();
+        String shuM = editShuM.getText().toString().trim();
+        int bjsNameID = (Integer) spinnerBjsID.getSelectedItem();
+        String bookCode = (String) spinnerBookCode.getSelectedItem();
+
+        if (!TextUtils.isEmpty(shuM)) {
+            List<BookRefCode> bookRefNames = DataSupport.select("*").where("shuM = ?", shuM).find(BookRefCode.class);
+            if (bookRefNames.size() > 0) {
+                Toast.makeText(this, "书名已存在", Toast.LENGTH_SHORT).show();
             } else {
-                SimpleRight simpleRight = new SimpleRight();
-                simpleRight.setBjsName(rightName);
-                simpleRight.save();
-                editRightName.setText("");
-                //hideKeyboard();
-                simpleRightAdapter.checked.add(false);
-                simpleRightList.add(simpleRight);
-                simpleRightAdapter.notifyItemInserted(simpleRightList.size() - 1);
-                recyclerView.scrollToPosition(simpleRightList.size() - 1);
-                allCount = simpleRightList.size();
+                BookRefCode bookRefName = new BookRefCode();
+                bookRefName.setBjsNameID(bjsNameID);
+                bookRefName.setBookTypeCode(bookCode);
+                bookRefName.setShuM(shuM);
+                bookRefName.save();
+                editShuM.setText("");
+                bookRefCodeAdapter.checked.add(false);
+                bookRefCodeList.add(bookRefName);
+                bookRefCodeAdapter.notifyItemInserted(bookRefCodeList.size() - 1);
+                recyclerView.scrollToPosition(bookRefCodeList.size() - 1);
+                allCount = bookRefCodeList.size();
                 updateAllCount();
             }
         } else {
-            Toast.makeText(this, "编辑室不能为空", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "书名不能为空", Toast.LENGTH_SHORT).show();
         }
     }
 
     /**
-     * @param v 删除所选编辑室
+     * @param v 删除所选书名
      */
     public void onDeleteRights(View v) {
         if (selectedCount == 0) {
             Toast.makeText(this, "无选中项", Toast.LENGTH_SHORT).show();
         } else {
-            for (int i = simpleRightAdapter.checked.size() - 1; i >= 0; i--) {
-                //View view = recyclerView.getChildAt(i);
-                //CheckBox checkBox = (CheckBox) view.findViewById(R.id.checkbox_delete);
-                if (simpleRightAdapter.checked.get(i)) {
-                    String bjsName = simpleRightList.get(i).getBjsName();
-                    DataSupport.deleteAll(SimpleRight.class, "bjsName = ?", bjsName);
-                    simpleRightAdapter.checked.remove(i);
-                    simpleRightList.remove(i);
+            for (int i = bookRefCodeAdapter.checked.size() - 1; i >= 0; i--) {
+                if (bookRefCodeAdapter.checked.get(i)) {
+                    String shuM = bookRefCodeList.get(i).getShuM();
+                    int id = bookRefCodeList.get(i).getId();
+                    DataSupport.deleteAll(BookRefCode.class, "shuM = ? and id = ?", shuM, "" + id);
+                    bookRefCodeAdapter.checked.remove(i);
+                    bookRefCodeList.remove(i);
                 }
             }
-            simpleRightAdapter.notifyDataSetChanged();
-            // addNewLayout.setVisibility(View.VISIBLE);
-            // deleteLayout.setVisibility(View.INVISIBLE);
+            bookRefCodeAdapter.notifyDataSetChanged();
             selectedCount = 0;
             updateSelectedCount();
         }
     }
 
     /**
-     * @param v 取消删除编辑室
+     * @param v 取消删除书名
      */
     public void onCancelDelete(View v) {
         RecyclerView.LayoutManager layoutManager = recyclerView.getLayoutManager();
@@ -148,7 +174,7 @@ public class SimpleTableActivity extends AppCompatActivity {
         refreshRecycler();
         recyclerView.scrollToPosition(position);
         addNewLayout.setVisibility(View.VISIBLE);
-        deleteLayout.setVisibility(View.INVISIBLE);
+        deleteLayout.setVisibility(View.GONE);
         updateAllCount();
     }
 
@@ -169,8 +195,8 @@ public class SimpleTableActivity extends AppCompatActivity {
     }
 
     private void clearSelected() {
-        for (int i = 0; i < simpleRightAdapter.checked.size(); i++) {
-            simpleRightAdapter.checked.set(i, false);
+        for (int i = 0; i < bookRefCodeAdapter.checked.size(); i++) {
+            bookRefCodeAdapter.checked.set(i, false);
         }
         selectedCount = 0;
     }
@@ -192,9 +218,8 @@ public class SimpleTableActivity extends AppCompatActivity {
                     break;
                 clearSelected();
                 updateSelectedCount();
-                addNewLayout.setVisibility(View.INVISIBLE);
+                addNewLayout.setVisibility(View.GONE);
                 deleteLayout.setVisibility(View.VISIBLE);
-                //Toast.makeText(this, "allCount:" + allCount, Toast.LENGTH_SHORT).show();
                 showCheckBox();
                 break;
         }

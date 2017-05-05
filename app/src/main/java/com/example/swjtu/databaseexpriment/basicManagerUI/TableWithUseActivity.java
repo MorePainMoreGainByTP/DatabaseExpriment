@@ -125,8 +125,8 @@ public class TableWithUseActivity extends AppCompatActivity {
                     bjsWithUseAdapter.notifyItemInserted(position);
                     recyclerView.scrollToPosition(position);
                 }
-                updateAllCount();
                 allCount = bjsWithUses.size();
+                updateAllCount();
             }
         } else {
             Toast.makeText(this, "编辑室与序号不能为空", Toast.LENGTH_SHORT).show();

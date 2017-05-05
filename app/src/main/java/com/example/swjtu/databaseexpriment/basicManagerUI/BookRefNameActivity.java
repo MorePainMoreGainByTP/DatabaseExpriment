@@ -134,8 +134,8 @@ public class BookRefNameActivity extends AppCompatActivity {
                 bookRefNameList.add(bookRefName);
                 bookRefNameAdapter.notifyItemInserted(bookRefNameList.size() - 1);
                 recyclerView.scrollToPosition(bookRefNameList.size() - 1);
-                updateAllCount();
                 allCount = bookRefNameList.size();
+                updateAllCount();
             }
         } else {
             Toast.makeText(this, "书名不能为空", Toast.LENGTH_SHORT).show();

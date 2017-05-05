@@ -57,6 +57,10 @@ public class BasicInfoRepositoryActivity extends AppCompatActivity {
         startActivity(new Intent(this, BookTypeActivity.class));
     }
 
+    public void onCodeRef(View v) {
+        startActivity(new Intent(this, BookRefCodeActivity.class));
+    }
+
     public void onPrimaryKey(View v) {
         startActivity(new Intent(this, BookRefKeyActivity.class));
     }

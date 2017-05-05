@@ -121,8 +121,8 @@ public class BookTypeActivity extends AppCompatActivity {
                     bookTypeAdapter.notifyItemInserted(position);
                     recyclerView.scrollToPosition(position);
                 }
-                updateAllCount();
                 allCount = bookTypeList.size();
+                updateAllCount();
             }
         } else {
             Toast.makeText(this, "编码与图书类型不能为空", Toast.LENGTH_SHORT).show();
