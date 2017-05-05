@@ -174,7 +174,7 @@ public class BookRefNameActivity extends AppCompatActivity {
         refreshRecycler();
         recyclerView.scrollToPosition(position);
         addNewLayout.setVisibility(View.VISIBLE);
-        deleteLayout.setVisibility(View.INVISIBLE);
+        deleteLayout.setVisibility(View.GONE);
         updateAllCount();
     }
 
@@ -218,7 +218,7 @@ public class BookRefNameActivity extends AppCompatActivity {
                     break;
                 clearSelected();
                 updateSelectedCount();
-                addNewLayout.setVisibility(View.INVISIBLE);
+                addNewLayout.setVisibility(View.GONE);
                 deleteLayout.setVisibility(View.VISIBLE);
                 showCheckBox();
                 break;
