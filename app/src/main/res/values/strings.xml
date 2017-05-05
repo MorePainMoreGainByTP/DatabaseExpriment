@@ -44,5 +44,6 @@
     <string name="bjsName">编辑室名</string>
     <string name="use">是否在用</string>
     <string name="book_type">图书类型</string>
+    <string name="book_name">书名</string>
 
 </resources>

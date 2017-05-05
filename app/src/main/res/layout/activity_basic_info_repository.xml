@@ -124,7 +124,7 @@
         android:background="@drawable/rect_bg_white_gray_press"
         android:clickable="true"
         android:gravity="center_vertical"
-        android:onClick="onInfoName"
+        android:onClick="onRefName"
         android:orientation="horizontal"
         android:padding="10dp">
 

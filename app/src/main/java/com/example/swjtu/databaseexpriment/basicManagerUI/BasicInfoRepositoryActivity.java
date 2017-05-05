@@ -57,6 +57,10 @@ public class BasicInfoRepositoryActivity extends AppCompatActivity {
         startActivity(new Intent(this, BookTypeActivity.class));
     }
 
+    public void onRefName(View v) {
+        startActivity(new Intent(this, BookRefNameActivity.class));
+    }
+
     private long lastTime;
 
     @Override
