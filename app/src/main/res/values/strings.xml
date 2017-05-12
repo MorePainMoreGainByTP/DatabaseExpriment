@@ -48,5 +48,22 @@
     <string name="book_code">图书编码</string>
     <string name="book_type_id">图书类型ID</string>
     <string name="book_name">书名</string>
-
+    <string name="stu_no">学号</string>
+    <string name="stu_name">姓名</string>
+    <string name="grade">年级</string>
+    <string name="class_no">班级</string>
+    <string name="study_time">学制</string>
+    <string name="birth_date">出生日期</string>
+    <string name="enrollment_date">入学日期</string>
+    <string name="save">保存</string>
+    <string name="clear">清除</string>
+<string-array name="sex">
+    <item>男</item>
+    <item>女</item>
+</string-array>
+    <string-array name="category">
+        <item>本科生</item>
+        <item>研究生</item>
+        <item>博士生</item>
+    </string-array>
 </resources>

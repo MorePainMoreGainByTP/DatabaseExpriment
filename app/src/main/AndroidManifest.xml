@@ -42,19 +42,23 @@
         <activity
             android:name=".basicManagerUI.BasicInfoRepositoryActivity"
             android:label="@string/basic_info_repository">
+
+        </activity>
+        <activity android:name=".basicManagerUI.SimpleTableActivity" />
+        <activity android:name=".basicManagerUI.TableWithOrderActivity" />
+        <activity android:name=".basicManagerUI.TableWithUseActivity" />
+        <activity android:name=".basicManagerUI.BookTypeActivity" />
+        <activity android:name=".basicManagerUI.BookRefNameActivity" />
+        <activity android:name=".basicManagerUI.BookRefKeyActivity" />
+        <activity android:name=".basicManagerUI.BookRefCodeActivity" />
+        <activity android:name=".exercise6.InputInterfaceActivity"/>
+        <activity android:name=".exercise6.StudentInfoActivity" android:screenOrientation="landscape">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".basicManagerUI.SimpleTableActivity" />
-        <activity android:name=".basicManagerUI.TableWithOrderActivity" />
-        <activity android:name=".basicManagerUI.TableWithUseActivity" />
-        <activity android:name=".basicManagerUI.BookTypeActivity" />
-        <activity android:name=".basicManagerUI.BookRefNameActivity"/>
-        <activity android:name=".basicManagerUI.BookRefKeyActivity"/>
-        <activity android:name=".basicManagerUI.BookRefCodeActivity"/>
     </application>
 
 </manifest>
