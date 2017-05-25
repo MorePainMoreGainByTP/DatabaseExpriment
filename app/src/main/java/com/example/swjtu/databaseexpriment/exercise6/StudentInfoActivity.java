@@ -13,6 +13,8 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
@@ -149,6 +151,15 @@ public class StudentInfoActivity extends AppCompatActivity {
         bottomMask = (LinearLayout) findViewById(R.id.bottom_mask);
         editRetrieve = (EditText) findViewById(R.id.mask_condition);
 
+        powerLayout = (LinearLayout) findViewById(R.id.fragment_power_retrieve);
+        editValue = (EditText) findViewById(R.id.editValue);
+        spinnerField = (Spinner) findViewById(R.id.spinnerField);
+        spinnerLogicOption = (Spinner) findViewById(R.id.spinnerLogicOption);
+        spinnerOperator = (Spinner) findViewById(R.id.spinnerOperator);
+        recyclerView = (RecyclerView) findViewById(R.id.power_recycler);
+        powerConditionAdapter = new PowerConditionAdapter(this);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setAdapter(powerConditionAdapter);
 
         MyOnClickListener myOnClickListener = new MyOnClickListener(this);
         closeButton.setOnClickListener(myOnClickListener);
@@ -404,6 +415,123 @@ public class StudentInfoActivity extends AppCompatActivity {
         schoolNameList.remove("所有");
         updateMajorSelector(schoolList.get(0).getSimpleName());
         schoolSelector.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, schoolNameList));
+
+        List<String> fields = new ArrayList<>();
+        for (int i = 0; i < 11; i++) {
+            List<String> operators = new ArrayList<>();
+            switch (i) {
+                case 0:
+                    operators.add("=");
+                    operators.add("!=");
+                    operators.add("like");
+                    fieldOperator.put("姓名", operators);
+                    fields.add("姓名");
+                    break;
+                case 1:
+                    operators.add("=");
+                    operators.add("!=");
+                    operators.add("like");
+                    fieldOperator.put("性别", operators);
+                    fields.add("性别");
+                    break;
+                case 2:
+                    operators.add(">");
+                    operators.add("=");
+                    operators.add("<");
+                    operators.add("!=");
+                    operators.add(">=");
+                    operators.add("<=");
+                    operators.add("like");
+                    fieldOperator.put("学号", operators);
+                    fields.add("学号");
+                    break;
+                case 3:
+                    operators.add("=");
+                    operators.add("!=");
+                    operators.add("like");
+                    fieldOperator.put("学院", operators);
+                    fields.add("学院");
+                    break;
+                case 4:
+                    operators.add("=");
+                    operators.add("!=");
+                    operators.add("like");
+                    fieldOperator.put("专业", operators);
+                    fields.add("专业");
+                    break;
+                case 5:
+                    operators.add(">");
+                    operators.add("=");
+                    operators.add("<");
+                    operators.add("!=");
+                    operators.add(">=");
+                    operators.add("<=");
+                    fieldOperator.put("年级", operators);
+                    fields.add("年级");
+                    break;
+                case 6:
+                    operators.add(">");
+                    operators.add("=");
+                    operators.add("<");
+                    operators.add("!=");
+                    operators.add(">=");
+                    operators.add("<=");
+                    fieldOperator.put("班级", operators);
+                    fields.add("班级");
+                    break;
+                case 7:
+                    operators.add(">");
+                    operators.add("=");
+                    operators.add("<");
+                    operators.add("!=");
+                    operators.add(">=");
+                    operators.add("<=");
+                    fieldOperator.put("入学日期", operators);
+                    fields.add("入学日期");
+                    break;
+                case 8:
+                    operators.add(">");
+                    operators.add("=");
+                    operators.add("<");
+                    operators.add("!=");
+                    operators.add(">=");
+                    operators.add("<=");
+                    fieldOperator.put("学制", operators);
+                    fields.add("学制");
+                    break;
+                case 9:
+                    operators.add("=");
+                    operators.add("!=");
+                    operators.add("like");
+                    fieldOperator.put("类别", operators);
+                    fields.add("类别");
+                    break;
+                case 10:
+                    operators.add(">");
+                    operators.add("=");
+                    operators.add("<");
+                    operators.add("!=");
+                    operators.add(">=");
+                    operators.add("<=");
+                    fieldOperator.put("出生日期", operators);
+                    fields.add("出生日期");
+                    break;
+            }
+        }
+        spinnerField.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, fields));
+        spinnerOperator.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, fieldOperator.get(fields.get(0))));
+        spinnerField.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                spinnerOperator.setAdapter(new ArrayAdapter<>(StudentInfoActivity.this,
+                        android.R.layout.simple_list_item_1, fieldOperator.get((String) spinnerField.getItemAtPosition(position))));
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
     }
 
     private void updateMajorSelector(String schoolName) {
@@ -465,7 +593,7 @@ public class StudentInfoActivity extends AppCompatActivity {
                 bottomMask.setVisibility(VISIBLE);
                 break;
             case R.id.all_power_search:
-
+                powerLayout.setVisibility(VISIBLE);
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -683,14 +811,13 @@ public class StudentInfoActivity extends AppCompatActivity {
                         student.setCategory(category);
                         student.setEnrollmentDate(Date.valueOf(enrollmentDate).getTime());
                         student.setBirthDate(Date.valueOf(birthDate).getTime());
-
+                        student.setInfoRedundancy(student.mySetInfoRedundancy());
                         List<Student> tempStudents = select("*").where("stuNo = ?", stuNo).find(Student.class);
                         if (addData) {//添加学生
                             if (tempStudents != null && tempStudents.size() > 0) {
                                 Toast.makeText(context, "该学号已存在", Toast.LENGTH_SHORT).show();
                                 stuNoWra.getEditText().requestFocus();
                             } else {
-                                student.setInfoRedundancy(student.mySetInfoRedundancy());
                                 student.save();
                                 studentList = DataSupport.findAll(Student.class);
                                 Log.i(TAG, "save: " + studentList);
@@ -708,7 +835,6 @@ public class StudentInfoActivity extends AppCompatActivity {
                                 Toast.makeText(context, "该学号已存在", Toast.LENGTH_SHORT).show();
                                 stuNoWra.getEditText().requestFocus();
                             } else {
-                                student.setInfoRedundancy(student.mySetInfoRedundancy());
                                 student.updateAll("id = ?", currStudent.getId() + "");
                                 studentList = DataSupport.findAll(Student.class);
                                 allCount = studentList.size();
@@ -1034,6 +1160,98 @@ public class StudentInfoActivity extends AppCompatActivity {
         editRetrieve.setText("");
     }
 
+    public void addCondition(View v) {
+        String logicOption = (String) spinnerLogicOption.getSelectedItem();
+        String field = (String) spinnerField.getSelectedItem();
+        String operator = (String) spinnerOperator.getSelectedItem();
+        String value = editValue.getText().toString().trim();
+
+        if (!TextUtils.isEmpty(value)) {
+            if (powerConditionAdapter.checkedList.size() == 0) {
+                logicOption = "";
+            }
+            powerConditionAdapter.addConditionItem(logicOption, field, operator, value);
+        } else {
+            Toast.makeText(this, "请输入值", Toast.LENGTH_SHORT).show();
+        }
+
+    }
+
+    public void deleteCondition(View v) {
+        if (powerConditionAdapter.count > 0)
+            new AlertDialog.Builder(this).setMessage("删除所选条件？").setNegativeButton("取消", null).
+                    setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            powerConditionAdapter.deleteCheckedItem();
+                        }
+                    }).create().show();
+    }
+
+    public void powerRetrieve(View v) {
+        String sql = "";
+        boolean firstRow = true;
+        for (int i = 0; i < powerConditionAdapter.conditionStrings.size(); i++) {
+            if (powerConditionAdapter.checkedList.get(i)) {
+                List<String> condition = powerConditionAdapter.conditionStrings.get(i);
+                String temp = "";
+                if (firstRow) {
+                    firstRow = false;
+                } else {
+                    temp += condition.get(0);
+                }
+                switch (condition.get(1)) {
+                    case "姓名":
+                        temp += " name " + condition.get(2) + " '"+condition.get(3) + "' ";
+                        break;
+                    case "性别":
+                        temp += " sex " + condition.get(2) + " '" + condition.get(3) + "' ";
+                        break;
+                    case "学号":
+                        temp += " stuNo " + condition.get(2) + " '" + condition.get(3) + "' ";
+                        break;
+                    case "学院":
+                        temp += " schoolName " + condition.get(2) + " '" + condition.get(3) + "' ";
+                        break;
+                    case "专业":
+                        temp += " majorName " + condition.get(2) + " '" + condition.get(3) + "' ";
+                        break;
+                    case "年级":
+                        temp += " grade " + condition.get(2) + " '" + condition.get(3) + "' ";
+                        break;
+                    case "班级":
+                        temp += " classNo " + condition.get(2) + " '" + condition.get(3) + "' ";
+                        break;
+                    case "入学日期":
+                        temp += " enrollmentDate " + condition.get(2) + " '" + condition.get(3) + "' ";
+                        break;
+                    case "学制":
+                        temp += " studyTime " + condition.get(2) + " '" + condition.get(3) + "' ";
+                        break;
+                    case "类别":
+                        temp += " category " + condition.get(2) + " '" + condition.get(3) + "' ";
+                        break;
+                    case "出生日期":
+                        temp += " birthDate " + condition.get(2) + " '" + condition.get(3) + "' ";
+                        break;
+                }
+                sql += temp;
+            }
+        }
+        Log.i(TAG, "powerRetrieve: " + sql);
+        List<Student> students = DataSupport.select("*").where(sql).find(Student.class);
+        studentList = students;
+        allCount = students.size();
+        updateTitle();
+        powerLayout.setVisibility(GONE);
+        ((FirstFragment) fragmentList.get(0)).updateData(students);
+        ((FirstFragment) fragmentList.get(1)).updateData(students);
+    }
+
+    public void powerCloseWin(View v) {
+        powerLayout.setVisibility(GONE);
+    }
+
     private LinearLayout bottomGroupLayout;
     private EditText groupName, groupId, groupClass, groupGradeLow, groupGradeHigh, groupYearLimit, groupBirthLow, groupBirthHigh;
     private CheckBox groupNameMatch, groupIdMatch;
@@ -1045,4 +1263,11 @@ public class StudentInfoActivity extends AppCompatActivity {
     private LinearLayout bottomMask;
     private EditText editRetrieve;
 
+    private LinearLayout powerLayout;
+    private EditText editValue;
+    private Spinner spinnerLogicOption, spinnerField, spinnerOperator;
+    public RecyclerView recyclerView;
+    private PowerConditionAdapter powerConditionAdapter;
+
+    private Map<String, List<String>> fieldOperator = new HashMap<>();
 }

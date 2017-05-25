@@ -57,10 +57,10 @@
     <string name="enrollment_date">入学日期</string>
     <string name="save">保存</string>
     <string name="clear">清除</string>
-<string-array name="sex">
-    <item>男</item>
-    <item>女</item>
-</string-array>
+    <string-array name="sex">
+        <item>男</item>
+        <item>女</item>
+    </string-array>
 
     <string-array name="sex2">
         <item>所有</item>
@@ -79,5 +79,34 @@
         <item>本科生</item>
         <item>研究生</item>
         <item>博士生</item>
+    </string-array>
+
+    <string-array name="logic_option">
+        <item>and</item>
+        <item>or</item>
+    </string-array>
+
+    <string-array name="operator">
+        <item>》</item>
+        <item>=</item>
+        <item>《</item>
+        <item>!=</item>
+        <item>》=</item>
+        <item>《=</item>
+        <item>like</item>
+    </string-array>
+
+    <string-array name="field">
+        <item>姓名</item>
+        <item>性别</item>
+        <item>学号</item>
+        <item>学院</item>
+        <item>专业</item>
+        <item>年级</item>
+        <item>班级</item>
+        <item>入学日期</item>
+        <item>学制</item>
+        <item>类别</item>
+        <item>出生日期</item>
     </string-array>
 </resources>
