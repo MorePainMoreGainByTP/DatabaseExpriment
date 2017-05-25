@@ -19,6 +19,11 @@ public class Student extends DataSupport implements Serializable {
     private String major;
     private int grade;
     private int classNo;
+    private String category;
+    private int studyTime;
+    private long enrollmentDate;    //入学日期
+    private long birthDate;  //出生日期
+
 
     public String getCategory() {
         return category;
@@ -35,11 +40,6 @@ public class Student extends DataSupport implements Serializable {
     public void setStudyTime(int studyTime) {
         this.studyTime = studyTime;
     }
-
-    private String category;
-    private int studyTime;
-    private String enrollmentDate;    //入学日期
-    private String birthDate;  //出生日期
 
     public int getId() {
         return id;
@@ -105,19 +105,19 @@ public class Student extends DataSupport implements Serializable {
         this.classNo = classNo;
     }
 
-    public String getEnrollmentDate() {
+    public long getEnrollmentDate() {
         return enrollmentDate;
     }
 
-    public void setEnrollmentDate(String enrollmentDate) {
+    public void setEnrollmentDate(long enrollmentDate) {
         this.enrollmentDate = enrollmentDate;
     }
 
-    public String getBirthDate() {
+    public long getBirthDate() {
         return birthDate;
     }
 
-    public void setBirthDate(String birthDate) {
+    public void setBirthDate(long birthDate) {
         this.birthDate = birthDate;
     }
 

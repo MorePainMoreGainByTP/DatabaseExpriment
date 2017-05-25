@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <litepal>
     <dbname value="DataBaseExperiment" />
-    <version value="15" />
+    <version value="17" />
     <list>
         <mapping class="com.example.swjtu.databaseexpriment.entity.SimpleRight" />
         <mapping class="com.example.swjtu.databaseexpriment.entity.RightWithOrder" />

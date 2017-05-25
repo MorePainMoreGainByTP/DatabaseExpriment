@@ -24,8 +24,8 @@ import java.util.List;
  */
 
 public class FirstFragment extends Fragment {
-    private List<Student> studentList;
-    private FirstStudentAdapter studentAdapter;
+    public List<Student> studentList;
+    public FirstStudentAdapter studentAdapter;
     public RecyclerView recyclerView;
     private LinearLayoutManager linearLayoutManager;
 
@@ -110,6 +110,12 @@ public class FirstFragment extends Fragment {
             recyclerView.setAdapter(studentAdapter);
             recyclerView.scrollToPosition(studentList.size() - 1);
         }
+    }
+
+    public void updateData(List<Student> studentList) {
+        this.studentList = studentList;
+        studentAdapter = new FirstStudentAdapter(studentList, isFirstPage);
+        recyclerView.setAdapter(studentAdapter);
     }
 
     public void deleteItem(List<Student> newStudentList) {

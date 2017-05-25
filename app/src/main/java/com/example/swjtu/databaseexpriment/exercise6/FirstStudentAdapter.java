@@ -11,6 +11,7 @@ import android.widget.TextView;
 import com.example.swjtu.databaseexpriment.R;
 import com.example.swjtu.databaseexpriment.entity.Student;
 
+import java.sql.Date;
 import java.util.List;
 
 /**
@@ -58,11 +59,11 @@ public class FirstStudentAdapter extends RecyclerView.Adapter<FirstStudentAdapte
             holder.txt1.setText(studentList.get(position).getGrade() + "");
             holder.txt2.setText(studentList.get(position).getClassNo() + "");
             //Date enrollDate = studentList.get(position).getEnrollmentDate();
-            holder.txt3.setText(studentList.get(position).getEnrollmentDate());
+            holder.txt3.setText(new Date(studentList.get(position).getEnrollmentDate()).toString());
             holder.txt4.setText(studentList.get(position).getStudyTime() + "");
             holder.txt5.setText(studentList.get(position).getCategory());
             //Date birDate = studentList.get(position).getBirthDate();
-            holder.txt6.setText(studentList.get(position).getBirthDate());
+            holder.txt6.setText(new Date(studentList.get(position).getBirthDate()).toString());
         }
         holder.item.setOnClickListener(new View.OnClickListener() {
             @Override

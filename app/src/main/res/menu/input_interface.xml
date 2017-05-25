@@ -1,7 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:id="@+id/search_menu" android:icon="@mipmap/search" app:showAsAction="always" android:title="搜索"/>
-    <item android:id="@+id/sort_menu" android:icon="@mipmap/sort" app:showAsAction="always" android:title="排序"/>
-    <item android:id="@+id/add_menu" android:icon="@mipmap/add1" app:showAsAction="always" android:title="添加"/>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/search_menu"
+        android:icon="@mipmap/search"
+        android:title="搜索"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/sort_menu"
+        android:icon="@mipmap/sort"
+        android:title="排序"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/add_menu"
+        android:icon="@mipmap/add1"
+        android:title="添加"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/group_search"
+        android:title="组合查询"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/obscure_search"
+        android:title="模糊查询"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/all_power_search"
+        android:title="万能组合查询"
+        app:showAsAction="never" />
 </menu>

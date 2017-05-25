@@ -61,7 +61,21 @@
     <item>男</item>
     <item>女</item>
 </string-array>
+
+    <string-array name="sex2">
+        <item>所有</item>
+        <item>男</item>
+        <item>女</item>
+    </string-array>
+
     <string-array name="category">
+        <item>本科生</item>
+        <item>研究生</item>
+        <item>博士生</item>
+    </string-array>
+
+    <string-array name="category2">
+        <item>所有</item>
         <item>本科生</item>
         <item>研究生</item>
         <item>博士生</item>

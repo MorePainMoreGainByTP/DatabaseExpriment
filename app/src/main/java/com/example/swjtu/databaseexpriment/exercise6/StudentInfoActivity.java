@@ -23,7 +23,9 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.DatePicker;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.NumberPicker;
 import android.widget.Spinner;
@@ -37,12 +39,20 @@ import com.example.swjtu.databaseexpriment.entity.Student;
 
 import org.litepal.crud.DataSupport;
 
+import java.sql.Date;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
+import static com.example.swjtu.databaseexpriment.R.id.group_grade_high;
+import static com.example.swjtu.databaseexpriment.R.id.group_grade_low;
+import static java.lang.Integer.parseInt;
+import static org.litepal.crud.DataSupport.select;
 
 /**
  * Created by tangpeng on 2017/5/10.
@@ -116,6 +126,27 @@ public class StudentInfoActivity extends AppCompatActivity {
         saveBtn = (Button) findViewById(R.id.saveButton);
         clearBtn = (Button) findViewById(R.id.clearButton);
 
+        bottomGroupLayout = (LinearLayout) findViewById(R.id.bottomGroupLayout);
+        bottomGroupLayout.setVisibility(GONE);
+        groupName = (EditText) findViewById(R.id.group_stu_name);
+        groupId = (EditText) findViewById(R.id.group_stu_no);
+        groupClass = (EditText) findViewById(R.id.group_class_no);
+        groupGradeLow = (EditText) findViewById(group_grade_low);
+        groupGradeHigh = (EditText) findViewById(group_grade_high);
+        groupYearLimit = (EditText) findViewById(R.id.group_study_time);
+        groupBirthLow = (EditText) findViewById(R.id.group_birth_date_low);
+        groupBirthHigh = (EditText) findViewById(R.id.group_birth_date_high);
+        groupNameMatch = (CheckBox) findViewById(R.id.group_name_all_match);
+        groupIdMatch = (CheckBox) findViewById(R.id.group_id_all_match);
+        groupSpinnerSchool = (Spinner) findViewById(R.id.groupSpinnerSchool);
+        groupSpinnerMajor = (Spinner) findViewById(R.id.groupSpinnerMajor);
+        groupSpinnerSex = (Spinner) findViewById(R.id.groupSpinnerSex);
+        groupSpinnerDegree = (Spinner) findViewById(R.id.groupSpinnerDegree);
+        groupRetrieveBtn = (Button) findViewById(R.id.retrieveButton);
+        groupResetBtn = (Button) findViewById(R.id.resetButton);
+        groupCloseButton = (TextView) findViewById(R.id.groupCloseButton);
+
+
         MyOnClickListener myOnClickListener = new MyOnClickListener(this);
         closeButton.setOnClickListener(myOnClickListener);
         gradeWra.getEditText().setOnClickListener(myOnClickListener);
@@ -135,6 +166,25 @@ public class StudentInfoActivity extends AppCompatActivity {
 
             }
         });
+
+        groupCloseButton.setOnClickListener(myOnClickListener);
+        groupResetBtn.setOnClickListener(myOnClickListener);
+        groupRetrieveBtn.setOnClickListener(myOnClickListener);
+        groupGradeHigh.setOnClickListener(myOnClickListener);
+        groupGradeLow.setOnClickListener(myOnClickListener);
+        groupBirthHigh.setOnClickListener(myOnClickListener);
+        groupBirthLow.setOnClickListener(myOnClickListener);
+        groupSpinnerSchool.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                selectXMajor((String) groupSpinnerSchool.getItemAtPosition(position));
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
     }
 
     private void initData() {
@@ -142,6 +192,7 @@ public class StudentInfoActivity extends AppCompatActivity {
         schoolList = new ArrayList<>();
         majorList = new ArrayList<>();
 
+        Date myDate = new Date(System.currentTimeMillis());
         //DataSupport.deleteAll(School.class);
         //DataSupport.deleteAll(Major.class);
         //DataSupport.deleteAll(Student.class);
@@ -323,31 +374,42 @@ public class StudentInfoActivity extends AppCompatActivity {
             editor.apply();
         }
 
-        Log.i(TAG, "saved: " + saved);
-        Log.i(TAG, "schoolList: " + schoolList);
-        Log.i(TAG, "majorList: " + majorList);
-
         List<String> schoolNameList = new ArrayList<>();
+        schoolNameList.add("所有");
+        schoolMajors.put("所有", null);
+        List<String> allMajor = new ArrayList<>();
         for (int i = 0; i < schoolList.size(); i++) {
-            schoolNameList.add(schoolList.get(i).getSimpleName());
+            String schoolName = schoolList.get(i).getSimpleName();
+            schoolNameList.add(schoolName);
+            List<String> majors = new ArrayList<>();
+            majors.add("所有");
+            for (int j = 0; j < majorList.size(); j++) {
+                if (majorList.get(j).getSchoolName().equals(schoolName)) {
+                    majors.add(majorList.get(j).getSimpleName());
+                }
+                if (i == 0)
+                    allMajor.add(majorList.get(j).getSimpleName());
+            }
+            schoolMajors.put(schoolName, majors);
         }
+        schoolMajors.put("所有", allMajor);
+        List<String> includeAll = new ArrayList<>(schoolNameList);
+
+        groupSpinnerSchool.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, includeAll));
+        groupSpinnerMajor.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, schoolMajors.get(includeAll.get(0))));
+
         updateMajorSelector(schoolList.get(0).getSimpleName());
-
-        Log.i(TAG, "schoolNameList: " + schoolNameList);
-
+        schoolNameList.remove("所有");
         schoolSelector.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, schoolNameList));
     }
 
     private void updateMajorSelector(String schoolName) {
-        List<String> majorNameList = new ArrayList<>();
-        for (int i = 0; i < majorList.size(); i++) {
-            if (majorList.get(i).getSchoolName().equals(schoolName))
-                majorNameList.add(majorList.get(i).getSimpleName());
-        }
-        Log.i(TAG, "majorNameList: " + majorNameList);
-        majorSelector.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, majorNameList));
+        majorSelector.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, schoolMajors.get(schoolName)));
     }
 
+    private void selectXMajor(String key) {
+        groupSpinnerMajor.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, schoolMajors.get(key)));
+    }
 
     private void initFragment() {
         fragmentList = new ArrayList<>();
@@ -392,6 +454,9 @@ public class StudentInfoActivity extends AppCompatActivity {
                 addData = true;
                 deleteBtn.setClickable(false);
                 bottomLayout.setVisibility(View.VISIBLE);
+                break;
+            case R.id.group_search:
+                bottomGroupLayout.setVisibility(VISIBLE);
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -447,6 +512,32 @@ public class StudentInfoActivity extends AppCompatActivity {
                         }
                     }).setNegativeButton("取消", null).create().show();
                     break;
+                case group_grade_high:
+                    Calendar calendar3 = Calendar.getInstance();
+                    final NumberPicker numberPicker3 = new NumberPicker(context, null);
+                    numberPicker3.setMaxValue(calendar3.get(Calendar.YEAR));
+                    numberPicker3.setMinValue(calendar3.get(Calendar.YEAR) - 30);
+                    numberPicker3.setValue(calendar3.get(Calendar.YEAR));
+                    new AlertDialog.Builder(context).setView(numberPicker3).setTitle("选择年级").setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            groupGradeHigh.setText("" + numberPicker3.getValue());
+                        }
+                    }).setNegativeButton("取消", null).create().show();
+                    break;
+                case group_grade_low:
+                    Calendar calendar4 = Calendar.getInstance();
+                    final NumberPicker numberPicker4 = new NumberPicker(context, null);
+                    numberPicker4.setMaxValue(calendar4.get(Calendar.YEAR));
+                    numberPicker4.setMinValue(calendar4.get(Calendar.YEAR) - 30);
+                    numberPicker4.setValue(calendar4.get(Calendar.YEAR));
+                    new AlertDialog.Builder(context).setView(numberPicker4).setTitle("选择年级").setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            groupGradeLow.setText("" + numberPicker4.getValue());
+                        }
+                    }).setNegativeButton("取消", null).create().show();
+                    break;
                 case R.id.edit_enrollment_date:
                     final Calendar calendar1 = Calendar.getInstance();
                     DatePickerDialog datePickerDialog = new DatePickerDialog(context, 0, new DatePickerDialog.OnDateSetListener() {
@@ -463,6 +554,40 @@ public class StudentInfoActivity extends AppCompatActivity {
                     }, calendar1.get(Calendar.YEAR), calendar1.get(Calendar.MONTH), calendar1.get(Calendar.DAY_OF_MONTH));
                     datePickerDialog.create();
                     datePickerDialog.show();
+                    break;
+                case R.id.group_birth_date_high:
+                    final Calendar calendar5 = Calendar.getInstance();
+                    DatePickerDialog datePickerDialog5 = new DatePickerDialog(context, 0, new DatePickerDialog.OnDateSetListener() {
+                        @Override
+                        public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+                            Calendar calendar2 = Calendar.getInstance();
+                            calendar2.set(year, month, dayOfMonth);
+                            if (calendar5.compareTo(calendar2) >= 0) {
+                                groupBirthHigh.setText(year + "-" + (month + 1) + "-" + dayOfMonth);
+                            } else {
+                                Toast.makeText(context, "日期不合法", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    }, calendar5.get(Calendar.YEAR), calendar5.get(Calendar.MONTH), calendar5.get(Calendar.DAY_OF_MONTH));
+                    datePickerDialog5.create();
+                    datePickerDialog5.show();
+                    break;
+                case R.id.group_birth_date_low:
+                    final Calendar calendar6 = Calendar.getInstance();
+                    DatePickerDialog datePickerDialog6 = new DatePickerDialog(context, 0, new DatePickerDialog.OnDateSetListener() {
+                        @Override
+                        public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+                            Calendar calendar2 = Calendar.getInstance();
+                            calendar2.set(year, month, dayOfMonth);
+                            if (calendar6.compareTo(calendar2) >= 0) {
+                                groupBirthLow.setText(year + "-" + (month + 1) + "-" + dayOfMonth);
+                            } else {
+                                Toast.makeText(context, "日期不合法", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    }, calendar6.get(Calendar.YEAR), calendar6.get(Calendar.MONTH), calendar6.get(Calendar.DAY_OF_MONTH));
+                    datePickerDialog6.create();
+                    datePickerDialog6.show();
                     break;
                 case R.id.edit_birth_date:
                     final Calendar calendar2 = Calendar.getInstance();
@@ -537,25 +662,20 @@ public class StudentInfoActivity extends AppCompatActivity {
                         birthDateWra.setError("选择日期");
                         birthDateWra.getEditText().requestFocus();
                     } else {
-
-                        //String[] enrollStr = enrollmentDate.split("-");
-                        //Date enrollDate = Date.valueOf(enrollmentDate);
-                        //String[] birthStr = birthDate.split("-");
-                        // Date birDate = Date.valueOf(birthDate);
                         Student student = new Student();
                         student.setName(name);
                         student.setSex(sex);
                         student.setStuNo(stuNo);
                         student.setSchoolName(school);
                         student.setMajor(major);
-                        student.setGrade(Integer.parseInt(grade));
-                        student.setClassNo(Integer.parseInt(classNo));
-                        student.setStudyTime(Integer.parseInt(studyTime));
+                        student.setGrade(parseInt(grade));
+                        student.setClassNo(parseInt(classNo));
+                        student.setStudyTime(parseInt(studyTime));
                         student.setCategory(category);
-                        student.setEnrollmentDate(enrollmentDate);
-                        student.setBirthDate(birthDate);
+                        student.setEnrollmentDate(Date.valueOf(enrollmentDate).getTime());
+                        student.setBirthDate(Date.valueOf(birthDate).getTime());
 
-                        List<Student> tempStudents = DataSupport.select("*").where("stuNo = ?", stuNo).find(Student.class);
+                        List<Student> tempStudents = select("*").where("stuNo = ?", stuNo).find(Student.class);
                         if (addData) {//添加学生
                             if (tempStudents != null && tempStudents.size() > 0) {
                                 Toast.makeText(context, "该学号已存在", Toast.LENGTH_SHORT).show();
@@ -563,11 +683,12 @@ public class StudentInfoActivity extends AppCompatActivity {
                             } else {
                                 student.save();
                                 studentList = DataSupport.findAll(Student.class);
-                                Log.i(TAG, "save: "+studentList);
+                                Log.i(TAG, "save: " + studentList);
                                 allCount = studentList.size();
                                 updateTitle();
-                                ((FirstFragment) fragmentList.get(0)).insertItem();
-                                //((FirstFragment) fragmentList.get(1)).insertItem();
+                                ((FirstFragment) fragmentList.get(0)).updateData(studentList);
+                                ((FirstFragment) fragmentList.get(1)).updateData(studentList);
+
                                 bottomLayout.setVisibility(GONE);
                                 addData = false;
                                 clearBottom();
@@ -601,9 +722,165 @@ public class StudentInfoActivity extends AppCompatActivity {
                         clickItem(currIndex);
                     }
                     break;
+                case R.id.groupCloseButton:
+                    bottomGroupLayout.setVisibility(GONE);
+                    break;
+                case R.id.resetButton:
+                    resetBottomGroup();
+                    break;
+                case R.id.retrieveButton:
+                    startRetrieve();
+                    break;
             }
         }
     }
+
+    private void startRetrieve() {
+        String name = groupName.getText().toString().trim();
+        String id = groupId.getText().toString().trim();
+        String gradeLow = (groupGradeLow.getText().toString().trim());
+        String gradeHigh = (groupGradeHigh.getText().toString().trim());
+        String yearLimit = (groupYearLimit.getText().toString().trim());
+        String classStr = (groupClass.getText().toString().trim());
+        String birthLow = (groupBirthLow.getText().toString().trim());
+        String birthHigh = (groupBirthHigh.getText().toString().trim());
+        boolean isNameAllMatch = groupNameMatch.isChecked();
+        boolean isIdAllMatch = groupIdMatch.isChecked();
+        String school = (String) groupSpinnerSchool.getSelectedItem();
+        String major = (String) groupSpinnerMajor.getSelectedItem();
+        String sex = (String) groupSpinnerSex.getSelectedItem();
+        String degree = (String) groupSpinnerDegree.getSelectedItem();
+
+        StringBuilder stringBuilder = new StringBuilder();
+        String[] params = new String[16];
+        int count = 1;
+        if (!TextUtils.isEmpty(name)) {
+            if (isNameAllMatch)
+                params[count++] = name;
+            else params[count++] = "%" + name + "%";
+            stringBuilder.append("name  like ? ");
+        } else {
+            stringBuilder.append("name  like ? ");
+            params[count++] = "%";
+        }
+
+        if (!TextUtils.isEmpty(id)) {
+            stringBuilder.append("and stuNo like ? ");
+            if (isIdAllMatch)
+                params[count++] = id;
+            else params[count++] = "%" + id + "%";
+        }
+
+        if (!TextUtils.isEmpty(gradeLow)) {//年级下限
+            int low = Integer.parseInt(gradeLow);
+            if (!TextUtils.isEmpty(gradeHigh)) {
+
+                int high = Integer.parseInt(gradeHigh);
+                if (low > high) {//上下限
+                    Toast.makeText(this, "年级区间错误", Toast.LENGTH_SHORT).show();
+                    groupGradeHigh.requestFocus();
+                    return;
+                } else {
+                    stringBuilder.append("and grade <= ? and grade >= ? ");
+                    params[count++] = gradeLow;
+                    params[count++] = gradeHigh;
+                }
+            } else {//下限
+                stringBuilder.append("and grade >= ? ");
+                params[count++] = gradeLow;
+            }
+        } else if (!TextUtils.isEmpty(gradeHigh)) {//年级上限
+            stringBuilder.append("and grade <= ? ");
+            params[count++] = gradeHigh;
+        }
+
+        if (!TextUtils.isEmpty(classStr)) {
+            stringBuilder.append("and classNo = ? ");
+            params[count++] = classStr;
+        }
+
+        if (!TextUtils.isEmpty(yearLimit)) {
+            stringBuilder.append("and studyTime = ? ");
+            params[count++] = yearLimit;
+        }
+
+        if (!TextUtils.isEmpty(birthLow)) {//出生下限
+            long low = Date.valueOf(birthLow).getTime();
+            if (!TextUtils.isEmpty(birthHigh)) {
+
+                long high = Date.valueOf(birthHigh).getTime();
+                if (low > high) {//上下限
+                    Toast.makeText(this, "出生区间错误", Toast.LENGTH_SHORT).show();
+                    groupGradeHigh.requestFocus();
+                    return;
+                } else {
+                    stringBuilder.append("and birthDate <= ? and birthDate >= ? ");
+                    params[count++] = low + "";
+                    params[count++] = high + "";
+                }
+            } else {//下限
+                stringBuilder.append("and birthDate >= ? ");
+                params[count++] = low + "";
+            }
+        } else if (!TextUtils.isEmpty(birthHigh)) {//出生上限
+            stringBuilder.append("and birthDate <= ? ");
+            long high = Date.valueOf(birthHigh).getTime();
+            params[count++] = high + "";
+        }
+
+        if (!school.equals("所有")) {
+            stringBuilder.append("and schoolName like ? ");
+            params[count++] = school;
+            if (!major.equals("所有")) {
+                stringBuilder.append("and majorName like ? ");
+                params[count++] = major;
+            }
+        }
+
+        if (!sex.equals("所有")) {
+            stringBuilder.append("and sex like ? ");
+            params[count++] = sex;
+        }
+
+        if (!degree.equals("所有")) {
+            stringBuilder.append("and category like ? ");
+            params[count++] = degree;
+        }
+        params[0] = stringBuilder.toString();
+
+//        Log.i(TAG, "sql: " + stringBuilder.toString());
+//        String temp = "";
+//        for (int i = 0; i < count; i++) {
+//            temp += params[i] + "\t";
+//        }
+//        Log.i(TAG, "params: " + temp);
+        String[] realParams = Arrays.copyOfRange(params,0,count);
+        List<Student> retrieveStudents = DataSupport.select("*").where(realParams).find(Student.class);
+        studentList = retrieveStudents;
+        ((FirstFragment) fragmentList.get(0)).updateData(studentList);
+        ((FirstFragment) fragmentList.get(1)).updateData(studentList);
+
+        bottomGroupLayout.setVisibility(GONE);
+    }
+
+    private void resetBottomGroup() {
+        groupName.setText("");
+        groupId.setText("");
+        groupClass.setText("");
+        groupGradeLow.setText("");
+        groupGradeHigh.setText("");
+        groupYearLimit.setText("");
+        groupBirthLow.setText("");
+        groupBirthHigh.setText("");
+        groupNameMatch.setChecked(false);
+        groupIdMatch.setChecked(false);
+        groupSpinnerSchool.setSelection(0);
+        groupSpinnerMajor.setSelection(0);
+        groupSpinnerSex.setSelection(0);
+        groupSpinnerDegree.setSelection(0);
+
+    }
+
 
     private void clearBottom() {
         stuNameWra.getEditText().setText("");
@@ -650,12 +927,12 @@ public class StudentInfoActivity extends AppCompatActivity {
         student.setStuNo(stuNo);
         student.setSchoolName(school);
         student.setMajor(major);
-        student.setGrade(Integer.parseInt(grade));
-        student.setClassNo(Integer.parseInt(classNo));
-        student.setStudyTime(Integer.parseInt(studyTime));
+        student.setGrade(parseInt(grade));
+        student.setClassNo(parseInt(classNo));
+        student.setStudyTime(parseInt(studyTime));
         student.setCategory(category);
-        student.setEnrollmentDate(enrollmentDate);
-        student.setBirthDate(birthDate);
+        student.setEnrollmentDate(Date.valueOf(enrollmentDate).getTime());
+        student.setBirthDate(Date.valueOf(birthDate).getTime());
 
         return student;
     }
@@ -663,10 +940,8 @@ public class StudentInfoActivity extends AppCompatActivity {
 
     public void clickItem(int index) {
         currIndex = index;
-        //Toast.makeText(this, "index-->"+index, Toast.LENGTH_SHORT).show();
         Log.i(TAG, "clickItem: index = " + index);
         currStudent = studentList.get(index);
-        Log.i(TAG, "clickItem: 222222");
         addData = false;
         deleteBtn.setClickable(true);
         bottomLayout.setVisibility(VISIBLE);
@@ -681,18 +956,16 @@ public class StudentInfoActivity extends AppCompatActivity {
             }
         }
         schoolSelector.setSelection(position);
-        Log.i(TAG, "clickItem: 3333");
         updateMajorSelector(schoolList.get(position).getSimpleName());
-        Log.i(TAG, "clickItem: 44444");
 
         position = 0;
         Log.i(TAG, "getMajor: " + currStudent.getMajor());
         for (int i = 0; i < majorSelector.getCount(); i++) {
-            Log.i(TAG, "majorSelector: " + majorSelector.getItemAtPosition(i));
             if (((String) majorSelector.getItemAtPosition(i)).equals(currStudent.getMajor())) {
                 position = i;
                 majorSelector.setSelection(position);
                 Log.i(TAG, "position: " + position);
+                Log.i(TAG, "majorSelector,setSelection: " + majorSelector.getSelectedItem());
                 break;
             }
         }
@@ -710,8 +983,8 @@ public class StudentInfoActivity extends AppCompatActivity {
             }
         }
         categorySelector.setSelection(position);
-        enrollmentDateWra.getEditText().setText(currStudent.getEnrollmentDate());
-        birthDateWra.getEditText().setText(currStudent.getBirthDate());
+        enrollmentDateWra.getEditText().setText(new Date(currStudent.getEnrollmentDate()).toString());
+        birthDateWra.getEditText().setText(new Date(currStudent.getBirthDate()).toString());
     }
 
     //隐藏软键盘
@@ -722,4 +995,12 @@ public class StudentInfoActivity extends AppCompatActivity {
                     hideSoftInputFromWindow(view.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
         }
     }
+
+    private LinearLayout bottomGroupLayout;
+    private EditText groupName, groupId, groupClass, groupGradeLow, groupGradeHigh, groupYearLimit, groupBirthLow, groupBirthHigh;
+    private CheckBox groupNameMatch, groupIdMatch;
+    private Spinner groupSpinnerSchool, groupSpinnerMajor, groupSpinnerSex, groupSpinnerDegree;
+    private Button groupRetrieveBtn, groupResetBtn;
+    private TextView groupCloseButton;
+    private Map<String, List<String>> schoolMajors = new HashMap<>();
 }
