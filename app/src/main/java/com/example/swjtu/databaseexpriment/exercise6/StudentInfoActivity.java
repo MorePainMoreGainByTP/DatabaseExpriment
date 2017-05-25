@@ -146,6 +146,9 @@ public class StudentInfoActivity extends AppCompatActivity {
         groupResetBtn = (Button) findViewById(R.id.resetButton);
         groupCloseButton = (TextView) findViewById(R.id.groupCloseButton);
 
+        bottomMask = (LinearLayout) findViewById(R.id.bottom_mask);
+        editRetrieve = (EditText) findViewById(R.id.mask_condition);
+
 
         MyOnClickListener myOnClickListener = new MyOnClickListener(this);
         closeButton.setOnClickListener(myOnClickListener);
@@ -398,8 +401,8 @@ public class StudentInfoActivity extends AppCompatActivity {
         groupSpinnerSchool.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, includeAll));
         groupSpinnerMajor.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, schoolMajors.get(includeAll.get(0))));
 
-        updateMajorSelector(schoolList.get(0).getSimpleName());
         schoolNameList.remove("所有");
+        updateMajorSelector(schoolList.get(0).getSimpleName());
         schoolSelector.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, schoolNameList));
     }
 
@@ -457,6 +460,12 @@ public class StudentInfoActivity extends AppCompatActivity {
                 break;
             case R.id.group_search:
                 bottomGroupLayout.setVisibility(VISIBLE);
+                break;
+            case R.id.obscure_search:
+                bottomMask.setVisibility(VISIBLE);
+                break;
+            case R.id.all_power_search:
+
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -681,6 +690,7 @@ public class StudentInfoActivity extends AppCompatActivity {
                                 Toast.makeText(context, "该学号已存在", Toast.LENGTH_SHORT).show();
                                 stuNoWra.getEditText().requestFocus();
                             } else {
+                                student.setInfoRedundancy(student.mySetInfoRedundancy());
                                 student.save();
                                 studentList = DataSupport.findAll(Student.class);
                                 Log.i(TAG, "save: " + studentList);
@@ -698,6 +708,7 @@ public class StudentInfoActivity extends AppCompatActivity {
                                 Toast.makeText(context, "该学号已存在", Toast.LENGTH_SHORT).show();
                                 stuNoWra.getEditText().requestFocus();
                             } else {
+                                student.setInfoRedundancy(student.mySetInfoRedundancy());
                                 student.updateAll("id = ?", currStudent.getId() + "");
                                 studentList = DataSupport.findAll(Student.class);
                                 allCount = studentList.size();
@@ -781,7 +792,7 @@ public class StudentInfoActivity extends AppCompatActivity {
                     groupGradeHigh.requestFocus();
                     return;
                 } else {
-                    stringBuilder.append("and grade <= ? and grade >= ? ");
+                    stringBuilder.append("and grade >= ? and grade <= ? ");
                     params[count++] = gradeLow;
                     params[count++] = gradeHigh;
                 }
@@ -807,14 +818,13 @@ public class StudentInfoActivity extends AppCompatActivity {
         if (!TextUtils.isEmpty(birthLow)) {//出生下限
             long low = Date.valueOf(birthLow).getTime();
             if (!TextUtils.isEmpty(birthHigh)) {
-
                 long high = Date.valueOf(birthHigh).getTime();
                 if (low > high) {//上下限
                     Toast.makeText(this, "出生区间错误", Toast.LENGTH_SHORT).show();
                     groupGradeHigh.requestFocus();
                     return;
                 } else {
-                    stringBuilder.append("and birthDate <= ? and birthDate >= ? ");
+                    stringBuilder.append("and birthDate >= ? and birthDate <= ? ");
                     params[count++] = low + "";
                     params[count++] = high + "";
                 }
@@ -854,12 +864,13 @@ public class StudentInfoActivity extends AppCompatActivity {
 //            temp += params[i] + "\t";
 //        }
 //        Log.i(TAG, "params: " + temp);
-        String[] realParams = Arrays.copyOfRange(params,0,count);
+        String[] realParams = Arrays.copyOfRange(params, 0, count);
         List<Student> retrieveStudents = DataSupport.select("*").where(realParams).find(Student.class);
         studentList = retrieveStudents;
         ((FirstFragment) fragmentList.get(0)).updateData(studentList);
         ((FirstFragment) fragmentList.get(1)).updateData(studentList);
-
+        allCount = retrieveStudents.size();
+        updateTitle();
         bottomGroupLayout.setVisibility(GONE);
     }
 
@@ -996,6 +1007,33 @@ public class StudentInfoActivity extends AppCompatActivity {
         }
     }
 
+    public void maskRetrieve(View v) {
+
+        String content = (editRetrieve.getText().toString().trim());
+        content = content.replaceAll(" ", "");
+        List<Student> students;
+        if (!TextUtils.isEmpty(content))
+            students = DataSupport.select("*").where("infoRedundancy like ?", "%" + content + "%").find(Student.class);
+        else students = DataSupport.findAll(Student.class);
+        studentList = students;
+        allCount = students.size();
+        updateTitle();
+        bottomMask.setVisibility(GONE);
+        ((FirstFragment) fragmentList.get(0)).updateData(students);
+        ((FirstFragment) fragmentList.get(1)).updateData(students);
+        Log.i(TAG, "maskRetrieve: " + studentList);
+    }
+
+    public void maskCloseWin(View v) {
+        bottomMask.setVisibility(GONE);
+        editRetrieve.setText("");
+        hideKeyboard();
+    }
+
+    public void maskClear(View v) {
+        editRetrieve.setText("");
+    }
+
     private LinearLayout bottomGroupLayout;
     private EditText groupName, groupId, groupClass, groupGradeLow, groupGradeHigh, groupYearLimit, groupBirthLow, groupBirthHigh;
     private CheckBox groupNameMatch, groupIdMatch;
@@ -1003,4 +1041,8 @@ public class StudentInfoActivity extends AppCompatActivity {
     private Button groupRetrieveBtn, groupResetBtn;
     private TextView groupCloseButton;
     private Map<String, List<String>> schoolMajors = new HashMap<>();
+
+    private LinearLayout bottomMask;
+    private EditText editRetrieve;
+
 }

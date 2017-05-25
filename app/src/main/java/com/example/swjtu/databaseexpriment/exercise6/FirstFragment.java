@@ -114,8 +114,10 @@ public class FirstFragment extends Fragment {
 
     public void updateData(List<Student> studentList) {
         this.studentList = studentList;
-        studentAdapter = new FirstStudentAdapter(studentList, isFirstPage);
-        recyclerView.setAdapter(studentAdapter);
+        studentAdapter = new FirstStudentAdapter(this.studentList, isFirstPage);
+        if (recyclerView != null)
+            recyclerView.setAdapter(studentAdapter);
+        studentAdapter.notifyDataSetChanged();
     }
 
     public void deleteItem(List<Student> newStudentList) {

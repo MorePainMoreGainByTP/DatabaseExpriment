@@ -24,6 +24,21 @@ public class Student extends DataSupport implements Serializable {
     private long enrollmentDate;    //入学日期
     private long birthDate;  //出生日期
 
+    private String infoRedundancy;
+
+    public String mySetInfoRedundancy() {
+        java.sql.Date date1 = new java.sql.Date(enrollmentDate);
+        java.sql.Date date2 = new java.sql.Date(birthDate);
+        return name + sex + stuNo + schoolName + major + grade + classNo + category + studyTime + date1.toString() + date2.toString();
+    }
+
+    public String getInfoRedundancy() {
+        return infoRedundancy;
+    }
+
+    public void setInfoRedundancy(String infoRedundancy) {
+        this.infoRedundancy = infoRedundancy;
+    }
 
     public String getCategory() {
         return category;
