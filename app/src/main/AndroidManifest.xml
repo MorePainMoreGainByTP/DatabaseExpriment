@@ -51,8 +51,13 @@
         <activity android:name=".basicManagerUI.BookRefNameActivity" />
         <activity android:name=".basicManagerUI.BookRefKeyActivity" />
         <activity android:name=".basicManagerUI.BookRefCodeActivity" />
-        <activity android:name=".exercise6.InputInterfaceActivity"/>
-        <activity android:name=".exercise6.StudentInfoActivity" android:screenOrientation="landscape">
+        <activity android:name=".exercise6.InputInterfaceActivity" />
+        <activity
+            android:name=".exercise6.StudentInfoActivity"
+            android:screenOrientation="landscape">
+
+        </activity>
+        <activity android:name=".exercise8.TableTechActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

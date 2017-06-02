@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <litepal>
     <dbname value="DataBaseExperiment" />
-    <version value="19" />
+    <version value="21" />
     <list>
         <mapping class="com.example.swjtu.databaseexpriment.entity.SimpleRight" />
         <mapping class="com.example.swjtu.databaseexpriment.entity.RightWithOrder" />
@@ -13,5 +13,8 @@
         <mapping class="com.example.swjtu.databaseexpriment.entity.Major"/>
         <mapping class="com.example.swjtu.databaseexpriment.entity.School"/>
         <mapping class="com.example.swjtu.databaseexpriment.entity.Student"/>
+        <mapping class="com.example.swjtu.databaseexpriment.entity.Book"/>
+        <mapping class="com.example.swjtu.databaseexpriment.entity.BookIn"/>
+        <mapping class="com.example.swjtu.databaseexpriment.entity.BookRestore"/>
     </list>
 </litepal>
