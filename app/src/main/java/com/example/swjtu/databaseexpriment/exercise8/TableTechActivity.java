@@ -1,21 +1,32 @@
 package com.example.swjtu.databaseexpriment.exercise8;
 
+import android.Manifest;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.os.Environment;
 import android.print.PrintManager;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import com.example.swjtu.databaseexpriment.R;
 import com.example.swjtu.databaseexpriment.entity.Book;
@@ -25,6 +36,11 @@ import com.example.swjtu.databaseexpriment.exercise8.adapter.MyPrintDocumentAdap
 
 import org.litepal.crud.DataSupport;
 
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
@@ -443,6 +459,9 @@ public class TableTechActivity extends AppCompatActivity {
             case R.id.bookInPic:
                 startActivity(new Intent(this, BookInPicActivity.class));
                 break;
+            case R.id.exportBookRestore:
+                exportBookStorageExcel();
+                break;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -452,4 +471,84 @@ public class TableTechActivity extends AppCompatActivity {
         String jobName = "printBookRestore";
         printManager.print(jobName, new MyPrintDocumentAdapter(this, contents), null);
     }
+
+    private void exportBookStorageExcel() {
+        final EditText editText = (EditText) getLayoutInflater().inflate(R.layout.dialog_input, null, false);
+        new AlertDialog.Builder(this).setView(editText).setNegativeButton("取消", null).setPositiveButton("保存", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                String fileName = editText.getText().toString().trim();
+                if (!TextUtils.isEmpty(fileName)) {
+                    saveExcelFile(fileName);
+                } else {
+                    Toast.makeText(TableTechActivity.this, "请输入文件名", Toast.LENGTH_SHORT).show();
+                }
+            }
+        }).create().show();
+    }
+
+    private void saveExcelFile(String fileName) {
+        if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {
+            String root = Environment.getExternalStorageDirectory().getAbsolutePath();
+            Toast.makeText(this, root, Toast.LENGTH_SHORT).show();
+            File outFile = new File(root + "/" + fileName + ".xlsx");
+            try {
+                if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {//如果没有授权
+                    ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
+                    Toast.makeText(this, "", Toast.LENGTH_SHORT).show();
+                } else {
+
+                    if (!outFile.exists()) {
+                        outFile.createNewFile();
+                    }
+                    FileOutputStream fileOutputStream = new FileOutputStream(outFile);
+                    BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(fileOutputStream);
+                    for (int i = 0; i < contents.size(); i++) {
+                        String line = "";
+                        if (i == 0) {
+                            line = "图书库存表\n";
+                            bufferedOutputStream.write(line.getBytes());
+                            line = "书号\t书名\t作者\t图书分类\t开本\t库存数\t单价\t总码样\n";
+                            bufferedOutputStream.write(line.getBytes());
+                        }
+                        line = "";
+                        List<String> rowStr = contents.get(i);
+                        for (int j = 0; j < rowStr.size(); j++) {
+                            if (j == rowStr.size() - 1)
+                                line += rowStr.get(j) + "\n";
+                            else line += rowStr.get(j) + "\t";
+                        }
+                        bufferedOutputStream.write(line.getBytes());
+                    }
+                    bufferedOutputStream.flush();
+                    fileOutputStream.close();
+                }
+                Log.i(TAG, "outFile: " + outFile.length() + ",path: " + outFile.getPath() + ",isFile:" + outFile.isFile());
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+                Log.e(TAG, "saveExcelFile: ", e);
+            } catch (IOException e) {
+                e.printStackTrace();
+                Log.e(TAG, "saveExcelFile: ", e);
+            }
+        } else {
+            Toast.makeText(this, "文件不可修改？", Toast.LENGTH_SHORT).show();
+        }
+
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode) {
+            case 1:
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    // makeCall();
+                } else {
+                    Toast.makeText(this, "You denied the permission!", Toast.LENGTH_SHORT).show();
+                }
+                break;
+        }
+    }
+
 }
