@@ -1,15 +1,21 @@
 package com.example.swjtu.databaseexpriment.exercise8;
 
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.print.PrintManager;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.Spinner;
 
 import com.example.swjtu.databaseexpriment.R;
 import com.example.swjtu.databaseexpriment.entity.Book;
@@ -30,7 +36,10 @@ import java.util.List;
 public class TableTechActivity extends AppCompatActivity {
 
     private static final String TAG = "TableTechActivity";
+    private Spinner spinnerBookType;
+    private RecyclerView recyclerView;
 
+    private TableTechRecyclerAdapter tableTechRecyclerAdapter;
     private List<List<String>> contents = new ArrayList<>();
 
     @Override
@@ -38,23 +47,48 @@ public class TableTechActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_table_tech);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar.setTitle("图书库存一览表");
         setSupportActionBar(toolbar);
-        showData();
+        recyclerView = (RecyclerView) findViewById(R.id.recylerTableTech);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        spinnerBookType = (Spinner) findViewById(R.id.spinnerBookType);
+        spinnerBookType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                retrieveByBookType((String) spinnerBookType.getSelectedItem());
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+        retrieveByBookType("全部");
+        Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
+            @Override
+            public void uncaughtException(Thread t, Throwable e) {
+                Log.e(TAG, "uncaughtException: ", e);
+            }
+        });
     }
 
 
-    private void showData() {
-        List<Book> bookList = DataSupport.findAll(Book.class);
-        Log.i(TAG, "size: " + bookList.size() + "  bookList: " + bookList);
-        List<BookIn> bookIns = DataSupport.findAll(BookIn.class);
-        Log.i(TAG, "size: " + bookIns.size() + "  bookIns: " + bookIns);
-        List<BookRestore> bookRestores = DataSupport.findAll(BookRestore.class);
-        Log.i(TAG, "size: " + bookRestores.size() + "  bookRestores: " + bookRestores);
-
-
-        Cursor cursor = DataSupport.findBySQL("select bk.id,bk.shuH,bk.shuM,bk.zuoZhe,bk.tSFL,bk.kB,br.cS,bk.dJ,br.cS*bk.dJ" +
-                " from Book bk,BookRestore br where bk.shuH = br.shuH");
-
+    private void retrieveByBookType(String bookType) {
+//        List<Book> bookList = DataSupport.findAll(Book.class);
+//        Log.i(TAG, "size: " + bookList.size() + "  bookList: " + bookList);
+//        List<BookIn> bookIns = DataSupport.findAll(BookIn.class);
+//        Log.i(TAG, "size: " + bookIns.size() + "  bookIns: " + bookIns);
+//        List<BookRestore> bookRestores = DataSupport.findAll(BookRestore.class);
+//        Log.i(TAG, "size: " + bookRestores.size() + "  bookRestores: " + bookRestores);
+        contents = null;
+        contents = new ArrayList<>();
+        Cursor cursor = null;
+        if (bookType.equals("全部"))
+            cursor = DataSupport.findBySQL("select bk.id,bk.shuH,bk.shuM,bk.zuoZhe,bk.tSFL,bk.kB,br.cS,bk.dJ,br.cS*bk.dJ" +
+                    " from Book bk,BookRestore br where bk.shuH = br.shuH");
+        else
+            cursor = DataSupport.findBySQL("select bk.id,bk.shuH,bk.shuM,bk.zuoZhe,bk.tSFL,bk.kB,br.cS,bk.dJ,br.cS*bk.dJ" +
+                    " from Book bk,BookRestore br where bk.shuH = br.shuH and bk.tSFL = ?", bookType);
         int sumBook = 0;
         double sumMaYang = 0;
         while (cursor.moveToNext()) {
@@ -85,6 +119,10 @@ public class TableTechActivity extends AppCompatActivity {
         stringList.add("");
         stringList.add(String.format("%.2f", sumMaYang));
         contents.add(stringList);
+        tableTechRecyclerAdapter = null;
+        tableTechRecyclerAdapter = new TableTechRecyclerAdapter(contents);
+        recyclerView.setAdapter(tableTechRecyclerAdapter);
+        tableTechRecyclerAdapter.notifyDataSetChanged();
     }
 
     private void addData2DB() {//向数据库中添加基本数据
@@ -398,6 +436,12 @@ public class TableTechActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case R.id.printStore:
                 doPrintStore();
+                break;
+            case R.id.bookInTable:
+                startActivity(new Intent(this, BookInActivity.class));
+                break;
+            case R.id.bookInPic:
+                startActivity(new Intent(this, BookInPicActivity.class));
                 break;
         }
         return super.onOptionsItemSelected(item);

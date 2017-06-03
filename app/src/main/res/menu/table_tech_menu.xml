@@ -5,4 +5,16 @@
         android:id="@+id/printStore"
         android:title="打印库存表"
         app:showAsAction="never" />
+    <item
+        android:id="@+id/bookInTable"
+        android:title="入库统计表"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/bookInPic"
+        android:title="入库统计图"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/exportBookRestore"
+        android:title="导出库存表（excel）"
+        app:showAsAction="never" />
 </menu>

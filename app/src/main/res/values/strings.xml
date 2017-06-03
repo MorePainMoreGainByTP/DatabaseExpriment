@@ -109,4 +109,14 @@
         <item>类别</item>
         <item>出生日期</item>
     </string-array>
+    
+    <string-array name="bookType">
+        <item>全部</item>
+        <item>数理科学和化学</item>
+        <item>交通运输</item>
+        <item>经济</item>
+        <item>矿业工程</item>
+        <item>建筑科学</item>
+        <item>文化·科学·教育·体育</item>
+    </string-array>
 </resources>

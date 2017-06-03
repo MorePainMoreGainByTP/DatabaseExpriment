@@ -32,4 +32,5 @@ dependencies {
     compile 'org.litepal.android:core:1.5.1'
     compile 'com.kelin.scrollablepanel:library:1.2.0'
     testCompile 'junit:junit:4.12'
+    compile 'com.github.PhilJay:MPAndroidChart:v3.0.2'
 }

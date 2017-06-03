@@ -64,6 +64,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".exercise8.BookInActivity"/>
+        <activity android:name=".exercise8.BookInPicActivity"/>
     </application>
 
 </manifest>

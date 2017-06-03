@@ -19,6 +19,9 @@ allprojects {
             url 'http://www.idescout.com/maven/repo/'
         }
     }
+    repositories {
+        maven { url "https://jitpack.io" }
+    }
 }
 
 task clean(type: Delete) {
