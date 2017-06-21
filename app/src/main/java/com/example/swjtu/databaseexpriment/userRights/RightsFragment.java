@@ -93,12 +93,6 @@ public class RightsFragment extends Fragment implements CompoundButton.OnChecked
             if (cursor2 != null)
                 cursor2.close();
         }
-        /*
-        //查询所有权限
-        Cursor cursor3 = mySQLiteOpenHelper.getReadableDatabase().rawQuery("select * from rights", new String[]{});
-        while (cursor3 != null && cursor3.moveToNext()) {
-            Log.i(TAG, "initRightList: " + cursor3.getInt(0) + cursor3.getInt(1) + cursor3.getString(2) + cursor3.getString(3) + cursor3.getString(4));
-        }*/
         rightModuleRecyclerAdapter = new RightModuleRecyclerAdapter(rightList, true);
         recyclerView.setAdapter(rightModuleRecyclerAdapter);
         rightModuleRecyclerAdapter.notifyDataSetChanged();

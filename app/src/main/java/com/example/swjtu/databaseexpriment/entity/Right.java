@@ -1,12 +1,14 @@
 package com.example.swjtu.databaseexpriment.entity;
 
+import org.litepal.crud.DataSupport;
+
 import java.io.Serializable;
 
 /**
  * Created by tangpeng on 2017/4/9.
  */
 
-public class Right implements Serializable{
+public class Right extends DataSupport implements Serializable{
     private int ID; //主键
     private int rightNO;    //权限编号
     private String rightName;   //权限名
@@ -19,6 +21,9 @@ public class Right implements Serializable{
         this.rightName = rightName;
         this.module = module;
         this.winName = winName;
+    }
+
+    public Right() {
     }
 
     public int getID() {

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<litepal>
+    <dbname value="IntegratedDesign" />
+    <version value="3" />
+    <list>
+        <mapping class="com.example.swjtu.integrateddesign.entity.Arguments" />
+        <mapping class="com.example.swjtu.integrateddesign.entity.Manager" />
+        <mapping class="com.example.swjtu.integrateddesign.entity.Right" />
+        <mapping class="com.example.swjtu.integrateddesign.entity.Root" />
+    </list>
+</litepal>

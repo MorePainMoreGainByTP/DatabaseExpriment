@@ -28,4 +28,17 @@
         android:id="@+id/all_power_search"
         android:title="万能组合查询"
         app:showAsAction="never" />
+    <item
+        android:id="@+id/tableTech"
+        android:title="打印学生信息"
+        app:showAsAction="never"
+        />
+    <item
+        android:id="@+id/picTable"
+        android:title="各年级学生统计"
+        />
+    <item
+        android:id="@+id/exportExcel"
+        android:title="导出Excel"
+        />
 </menu>

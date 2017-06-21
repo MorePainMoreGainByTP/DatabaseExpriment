@@ -17,13 +17,11 @@
         android:theme="@style/AppTheme"
         tools:replace="android:label">
         <activity android:name=".loginPage.MainActivity">
-            <!--
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-            -->
         </activity>
         <activity
             android:name=".AllUsersActivity"
@@ -62,14 +60,15 @@
 
         </activity>
         <activity android:name=".exercise8.TableTechActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+            <!--<intent-filter>-->
+                <!--<action android:name="android.intent.action.MAIN" />-->
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+                <!--<category android:name="android.intent.category.LAUNCHER" />-->
+            <!--</intent-filter>-->
         </activity>
         <activity android:name=".exercise8.BookInActivity"/>
         <activity android:name=".exercise8.BookInPicActivity"/>
+        <activity android:name=".exercise6.StudentPicTableActivity"/>
     </application>
 
 </manifest>

@@ -1,14 +1,21 @@
 package com.example.swjtu.databaseexpriment.exercise6;
 
+import android.Manifest;
 import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.Environment;
+import android.print.PrintManager;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputLayout;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
@@ -38,9 +45,15 @@ import com.example.swjtu.databaseexpriment.R;
 import com.example.swjtu.databaseexpriment.entity.Major;
 import com.example.swjtu.databaseexpriment.entity.School;
 import com.example.swjtu.databaseexpriment.entity.Student;
+import com.example.swjtu.databaseexpriment.exercise8.adapter.MyPrintDocumentAdapter;
 
 import org.litepal.crud.DataSupport;
 
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -575,6 +588,16 @@ public class StudentInfoActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+            case R.id.exportExcel:
+                exportStudentInfoExcel();
+                break;
+            case R.id.picTable:
+                startActivity(new Intent(this,StudentPicTableActivity.class));
+                break;
+            case R.id.tableTech:
+                printStudentInfo();
+                //startActivity(new Intent(this, TableTechActivity.class));
+                break;
             case R.id.search_menu:
                 break;
             case R.id.sort_menu:
@@ -597,6 +620,109 @@ public class StudentInfoActivity extends AppCompatActivity {
                 break;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void exportStudentInfoExcel() {
+        final EditText editText = (EditText) getLayoutInflater().inflate(R.layout.dialog_input, null, false);
+        new AlertDialog.Builder(this).setView(editText).setNegativeButton("取消", null).setPositiveButton("保存", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                String fileName = editText.getText().toString().trim();
+                if (!TextUtils.isEmpty(fileName)) {
+                    saveExcelFile(fileName);
+                } else {
+                    Toast.makeText(StudentInfoActivity.this, "请输入文件名", Toast.LENGTH_SHORT).show();
+                }
+            }
+        }).create().show();
+    }
+
+    private void saveExcelFile(String fileName) {
+        if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {
+            String root = Environment.getExternalStorageDirectory().getAbsolutePath();
+            Toast.makeText(this, root, Toast.LENGTH_SHORT).show();
+            File outFile = new File(root + "/" + fileName + ".xlsx");
+            try {
+                if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {//如果没有授权
+                    ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
+                    Toast.makeText(this, "", Toast.LENGTH_SHORT).show();
+                } else {
+                    if (!outFile.exists()) {
+                        outFile.createNewFile();
+                    }
+                    FileOutputStream fileOutputStream = new FileOutputStream(outFile);
+                    BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(fileOutputStream);
+                    for (int i = 0; i < studentList.size(); i++) {
+                        String line = "";
+                        Student student = studentList.get(i);
+                        if (i == 0) {
+                            line = "学生信息表\n";
+                            bufferedOutputStream.write(line.getBytes());
+                            line = "ID\t姓名\t性别\t学号\t学院\t专业\t年级\t班级\t入学日期\t学制\t类别\t出生日期\n";
+                            bufferedOutputStream.write(line.getBytes());
+                        }
+                        line = "";
+                        line += student.getId() + "\t";
+                        line += student.getName() + "\t";
+                        line += student.getSex() + "\t";
+                        line += student.getStuNo() + "\t";
+                        line += student.getSchoolName() + "\t";
+                        line += student.getMajor() + "\t";
+                        line += student.getGrade() + "\t";
+                        line += student.getClassNo() + "\t";
+                        line += new Date(student.getEnrollmentDate()).toString() + "\t";
+                        line += student.getStudyTime() + "\t";
+                        line += student.getCategory() + "\t";
+                        line += new Date(student.getBirthDate()).toString() + "\n";
+                        bufferedOutputStream.write(line.getBytes());
+                    }
+                    bufferedOutputStream.flush();
+                    fileOutputStream.close();
+                }
+                Log.i(TAG, "outFile: " + outFile.length() + ",path: " + outFile.getPath() + ",isFile:" + outFile.isFile());
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+                Log.e(TAG, "saveExcelFile: ", e);
+            } catch (IOException e) {
+                e.printStackTrace();
+                Log.e(TAG, "saveExcelFile: ", e);
+            }
+        } else {
+            Toast.makeText(this, "文件不可修改？", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void printStudentInfo() {
+        List<List<String>> studentInfo = new ArrayList<>();
+        for (Student student : studentList) {
+            List<String> strings = new ArrayList<>();
+            strings.add(student.getName());
+            strings.add(student.getSex());
+            strings.add(student.getStuNo());
+            strings.add(student.getSchoolName());
+            strings.add(student.getMajor());
+            strings.add(student.getGrade() + "");
+            strings.add(student.getClassNo() + "");
+            strings.add(new Date(student.getEnrollmentDate()).toString());
+            strings.add(student.getStudyTime() + "");
+            strings.add(student.getCategory());
+            strings.add(new Date(student.getBirthDate()).toString());
+            studentInfo.add(strings);
+        }
+        List<String> strings = new ArrayList<>();
+        strings.add("合计(人数)");
+        strings.add(studentInfo.size() + "");
+        for (int j = 0; j < 9; j++)
+            strings.add("");
+        studentInfo.add(strings);
+        Toast.makeText(this, "记录：" + studentInfo.size(), Toast.LENGTH_SHORT).show();
+        List<String> columnTitle = Arrays.asList(new String[]{"姓名", "性别", "学号", "学院", "专业", "年级", "班级", "入学日期", "学制", "类别", "出生日期"});
+        String tableTitle = "学生信息一览表";
+        int[] columnScale = {2, 2, 3, 3, 2, 2, 2, 4, 1, 2, 3};
+        int itemsPerPage = 8;
+        PrintManager printManager = (PrintManager) getSystemService(Context.PRINT_SERVICE);
+        String jobName = "printBookRestore";
+        printManager.print(jobName, new MyPrintDocumentAdapter(this, studentInfo, columnTitle, tableTitle, columnScale, itemsPerPage), null);
     }
 
     class MyOnClickListener implements View.OnClickListener {
@@ -983,13 +1109,6 @@ public class StudentInfoActivity extends AppCompatActivity {
             params[count++] = degree;
         }
         params[0] = stringBuilder.toString();
-
-//        Log.i(TAG, "sql: " + stringBuilder.toString());
-//        String temp = "";
-//        for (int i = 0; i < count; i++) {
-//            temp += params[i] + "\t";
-//        }
-//        Log.i(TAG, "params: " + temp);
         String[] realParams = Arrays.copyOfRange(params, 0, count);
         List<Student> retrieveStudents = DataSupport.select("*").where(realParams).find(Student.class);
         studentList = retrieveStudents;
@@ -1053,10 +1172,6 @@ public class StudentInfoActivity extends AppCompatActivity {
         String category = (String) categorySelector.getSelectedItem();
         String enrollmentDate = enrollmentDateWra.getEditText().getText().toString().trim();
         String birthDate = birthDateWra.getEditText().getText().toString().trim();
-        //String[] enrollStr = enrollmentDate.split("-");
-        //Date enrollDate = new Date(Integer.parseInt(enrollStr[0]), Integer.parseInt(enrollStr[1]), Integer.parseInt(enrollStr[2]));
-        //String[] birthStr = birthDate.split("-");
-        //Date birDate = new Date(Integer.parseInt(birthStr[0]), Integer.parseInt(birthStr[1]), Integer.parseInt(birthStr[2]));
         Student student = new Student();
         student.setId(currStudent.getId());
         student.setName(name);
@@ -1134,7 +1249,6 @@ public class StudentInfoActivity extends AppCompatActivity {
     }
 
     public void maskRetrieve(View v) {
-
         String content = (editRetrieve.getText().toString().trim());
         content = content.replaceAll(" ", "");
         List<Student> students;
@@ -1145,8 +1259,8 @@ public class StudentInfoActivity extends AppCompatActivity {
         allCount = students.size();
         updateTitle();
         bottomMask.setVisibility(GONE);
-        ((FirstFragment) fragmentList.get(0)).updateData(students);
-        ((FirstFragment) fragmentList.get(1)).updateData(students);
+        ((FirstFragment) fragmentList.get(0)).updateData(studentList);
+        ((FirstFragment) fragmentList.get(1)).updateData(studentList);
         Log.i(TAG, "maskRetrieve: " + studentList);
     }
 
@@ -1202,7 +1316,7 @@ public class StudentInfoActivity extends AppCompatActivity {
                 }
                 switch (condition.get(1)) {
                     case "姓名":
-                        temp += " name " + condition.get(2) + " '"+condition.get(3) + "' ";
+                        temp += " name " + condition.get(2) + " '" + condition.get(3) + "' ";
                         break;
                     case "性别":
                         temp += " sex " + condition.get(2) + " '" + condition.get(3) + "' ";

@@ -13,6 +13,9 @@ import android.print.PrintAttributes;
 import android.print.PrintDocumentAdapter;
 import android.print.PrintDocumentInfo;
 import android.print.pdf.PrintedPdfDocument;
+import android.text.Layout;
+import android.text.StaticLayout;
+import android.text.TextPaint;
 import android.util.Log;
 
 import java.io.FileOutputStream;
@@ -31,15 +34,53 @@ public class MyPrintDocumentAdapter extends PrintDocumentAdapter {
 
     private Context context;
     private PrintedPdfDocument mPdfDocument;    //pdf 文件
-    private List<List<String>> contents;
-
+    private List<List<String>> contents;        //报表内容
+    private List<String> tableColumnName;   //报表列名
+    private String tableTitle;  //报表名称
+    private int[] columnScale;
     private int totalPages; //总的页数
-    private int itemsPerPage = 10;
+    private int itemsPerPage = 10;  //每页内容条数
     private final int topMargin = 50, leftMargin = 10, titleTopMargin = 40;
 
-    public MyPrintDocumentAdapter(Context context, List<List<String>> contents) {
+    public MyPrintDocumentAdapter(Context context, List<List<String>> contents, List<String> tableColumnName, String tableTitle, int[] columnScale,  int itemsPerPage) {
         this.context = context;
         this.contents = contents;
+        this.tableColumnName = tableColumnName;
+        this.tableTitle = tableTitle;
+        this.columnScale = columnScale;
+        this.itemsPerPage = itemsPerPage;
+    }
+
+    public int[] getColumnScale() {
+        return columnScale;
+    }
+
+    public int getTotalPages() {
+        return totalPages;
+    }
+
+    public void setTotalPages(int totalPages) {
+        this.totalPages = totalPages;
+    }
+
+    public int getItemsPerPage() {
+        return itemsPerPage;
+    }
+
+    public void setItemsPerPage(int itemsPerPage) {
+        this.itemsPerPage = itemsPerPage;
+    }
+
+    public int getTopMargin() {
+        return topMargin;
+    }
+
+    public int getLeftMargin() {
+        return leftMargin;
+    }
+
+    public int getTitleTopMargin() {
+        return titleTopMargin;
     }
 
     /**
@@ -129,7 +170,7 @@ public class MyPrintDocumentAdapter extends PrintDocumentAdapter {
         callback.onWriteFinished(pageRanges);
     }
 
-    private void drawPage(PdfDocument.Page page, int index) {
+    private void drawPage(PdfDocument.Page page, int index) {//从第index条内容绘制本页表格
         Canvas canvas = page.getCanvas();
         int width = canvas.getWidth();
         int height = canvas.getHeight();
@@ -138,11 +179,10 @@ public class MyPrintDocumentAdapter extends PrintDocumentAdapter {
             Paint paint = new Paint();
             paint.setTextSize(18);
             paint.setColor(Color.BLACK);
-            String title = "图书库存一览表";
-            int textWidth = (int) paint.measureText(title);
+            int textWidth = (int) paint.measureText(tableTitle);
             Paint.FontMetrics fontMetrics = paint.getFontMetrics();
             int textHeight = (int) (Math.ceil(fontMetrics.descent - fontMetrics.top) + 2);
-            canvas.drawText(title, width / 2 - textWidth / 2, titleTopMargin, paint);
+            canvas.drawText(tableTitle, width / 2 - textWidth / 2, titleTopMargin, paint);
 
             Date date = new Date(System.currentTimeMillis());
             String strDate = "报表生成日期：" + date.toString();
@@ -158,13 +198,13 @@ public class MyPrintDocumentAdapter extends PrintDocumentAdapter {
                 drawRow(canvas, topMargin + 50 * (i + 2), 50, contents.get(index + i), false);
                 high = topMargin + 50 * (i + 3);
             }
-            drawFooter(canvas, index + 1, high);
+            drawFooter(canvas, index/itemsPerPage+1, high);
         } else {
             for (int i = 0; i < itemsPerPage; i++) {
                 drawRow(canvas, topMargin + 50 * (i + 2), 50, contents.get(index + i), false);
                 high = topMargin + 50 * (i + 3);
             }
-            drawFooter(canvas, index + 1, high);
+            drawFooter(canvas, index/itemsPerPage + 1, high);
         }
 
 
@@ -186,70 +226,62 @@ public class MyPrintDocumentAdapter extends PrintDocumentAdapter {
         */
     }
 
+
+    /**
+     * @param canvas
+     * @param height   距离画布顶部的距离
+     * @param spec     每一个单元表格的宽度
+     * @param text     将绘制的内容
+     * @param isHeader
+     */
     private void drawRow(Canvas canvas, int height, int spec, List<String> text, boolean isHeader) {
         Log.i(TAG, "drawRectAndText: " + text);
         if (isHeader) {
-            text = new ArrayList<>();
-            text.add("书号");
-            text.add("书名");
-            text.add("作者");
-            text.add("图书分类");
-            text.add("开本");
-            text.add("库存数");
-            text.add("单价");
-            text.add("总码样");
+            text = tableColumnName;
         }
-
-        int width = (canvas.getWidth() - 2 * leftMargin) / 22;
+        int sumScale = 0;
+        for (int i : columnScale) {
+            sumScale += i;
+        }
+        int width = (canvas.getWidth() - 2 * leftMargin) / sumScale;  //将画布可用宽度均分为n份
         Paint paint = new Paint();
         paint.setTextSize(8);
         paint.setColor(Color.BLACK);
         paint.setStyle(Paint.Style.STROKE);
         int lastWidth = 0;
         for (int i = 0; i < text.size(); i++) {
-            int scale = 1;
-            switch (i) {
-                case 0:
-                    scale = 5;
-                    break;
-                case 1:
-                    scale = 5;
-                    break;
-                case 2:
-                    scale = 2;
-                    break;
-                case 3:
-                    scale = 3;
-                    break;
-                case 4:
-                    scale = 1;
-                    break;
-                case 5:
-                    scale = 2;
-                    break;
-                case 6:
-                    scale = 2;
-                    break;
-                case 7:
-                    scale = 2;
-                    break;
-            }
+            int scale = columnScale[i]; //每一列所占宽度比例
 
             if (i == 0) {
                 lastWidth = leftMargin;
             }
             paint.setStyle(Paint.Style.STROKE);
+            //绘制矩形框
             canvas.drawRect(lastWidth, height, lastWidth + scale * width, height + spec, paint);
             paint.setStyle(Paint.Style.FILL);
-            int yOffset = 0;
-            if (i == 5 || i == 6 || i == 7) {
-                paint.setTextAlign(Paint.Align.RIGHT);
-                yOffset = scale * width - 5;
-            } else {
-                paint.setTextAlign(Paint.Align.LEFT);
-                yOffset = width / 5;
+
+            TextPaint textPaint = new TextPaint();
+            textPaint.setColor(Color.rgb(0, 0, 0));
+
+            textPaint.setTextAlign(Paint.Align.LEFT);
+            textPaint.setTextSize(10);
+            String currLine = text.get(i);
+            int textWidth = (int) textPaint.measureText(currLine);    //计算文字宽度
+            int startPos = 0;
+            if (textWidth >= spec) {
+                int widthPerWord = textWidth / currLine.length();
+                startPos = spec / widthPerWord;
             }
-            canvas.drawText(text.get(i), lastWidth + yOffset, height + spec / 2, paint);
+
+            int yOffset = width / 5;
+            //Log.i(TAG, (i + 1) + " 内容：" + currLine + "文字宽度: " + textWidth + ",矩形宽度：" + spec + ",截断起始位置：" + startPos);
+            StaticLayout staticLayout = new StaticLayout(text.get(i), textPaint, (int) ((scale - 0.5) * width), Layout.Alignment.ALIGN_NORMAL, 1.5f, 0f, false);
+            canvas.save();
+            canvas.translate(lastWidth + yOffset, height + spec / 4);
+            staticLayout.draw(canvas);
+            canvas.restore();
+
+//            canvas.drawText(text.get(i), lastWidth + yOffset, height + spec / 2, paint);
             //canvas.drawText(text.get(i), lastWidth + width / 2, height + spec / 2,,,paint);
             lastWidth = lastWidth + scale * width;
         }

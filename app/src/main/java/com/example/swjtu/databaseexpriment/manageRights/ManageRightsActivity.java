@@ -59,7 +59,6 @@ public class ManageRightsActivity extends AppCompatActivity {
         Cursor cursor = mySQLiteOpenHelper.getReadableDatabase().rawQuery("select * from rights", new String[]{});
         while (cursor != null && cursor.moveToNext()) {
             rightList.add(new Right(cursor.getInt(0), cursor.getInt(1), cursor.getString(2), cursor.getString(3), cursor.getString(4)));
-            //Log.i(TAG, "权限：" + cursor.getInt(0) + "," + cursor.getInt(1) + "," + cursor.getString(2) + "," + cursor.getString(3) + "," + cursor.getString(4));
         }
         rightModuleRecyclerAdapter = new RightModuleRecyclerAdapter(rightList, true);
         recyclerView.setAdapter(rightModuleRecyclerAdapter);

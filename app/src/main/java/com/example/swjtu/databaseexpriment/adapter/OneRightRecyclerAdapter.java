@@ -9,10 +9,10 @@ import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.swjtu.databaseexpriment.R;
 import com.example.swjtu.databaseexpriment.entity.Right;
+import com.example.swjtu.databaseexpriment.exercise6.StudentInfoActivity;
 import com.example.swjtu.databaseexpriment.winName.UnknownActivity;
 
 import java.util.ArrayList;
@@ -61,11 +61,9 @@ public class OneRightRecyclerAdapter extends RecyclerView.Adapter<OneRightRecycl
             holder.linearLayout.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (right.getModule().length() > 3) {
+                    if(!right.getRightName().equals("管理学生信息"))
                         context.startActivity(new Intent(context, UnknownActivity.class).putExtra("winName", right.getRightName()));
-                    } else {
-                        Toast.makeText(context, "该功能未开放", Toast.LENGTH_SHORT).show();
-                    }
+                    else context.startActivity(new Intent(context, StudentInfoActivity.class).putExtra("winName", right.getRightName()));
                 }
             });
     }

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.example.swjtu.integrateddesign">
+
+    <application
+        android:name="org.litepal.LitePalApplication"
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme">
+        <activity
+            android:name=".MainActivity"
+            android:label="@string/app_name2"
+            android:theme="@style/AppTheme.NoActionBar">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".BaseActivity" />
+        <activity android:name=".loginTech.LoginTechnologyActivity" />
+        <activity android:name=".rightManage.RootPageActivity" />
+        <activity android:name=".loginTech.ManagerPageActivity" />
+        <activity android:name=".winName.UnknownActivity"/>
+        <activity android:name=".rightManage.AddNewUserActivity"/>
+        <activity android:name=".rightManage.AddRightActivity"/>
+        <activity android:name=".rightManage.ManageRightsActivity"/>
+        <activity android:name=".rightManage.ManagerRightsActivity"/>
+        <activity android:name=".rightManage.UpdatePassActivity"/>
+    </application>
+
+</manifest>

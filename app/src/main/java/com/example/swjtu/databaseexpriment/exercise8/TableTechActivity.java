@@ -43,6 +43,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.sql.Date;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -466,10 +467,15 @@ public class TableTechActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    private List<String> columnTitle = Arrays.asList(new String[]{"书号","书名","作者","图书分类","开本","库存数","单价","总码样"});
+    private int[] columnScale = {5,5,2,3,1,2,2,2};
+    private String tableTitle = "图书一览表";
+    private int itemsPerPage = 10;
+
     private void doPrintStore() {
         PrintManager printManager = (PrintManager) getSystemService(Context.PRINT_SERVICE);
         String jobName = "printBookRestore";
-        printManager.print(jobName, new MyPrintDocumentAdapter(this, contents), null);
+        printManager.print(jobName, new MyPrintDocumentAdapter(this, contents,columnTitle,tableTitle,columnScale,itemsPerPage), null);
     }
 
     private void exportBookStorageExcel() {

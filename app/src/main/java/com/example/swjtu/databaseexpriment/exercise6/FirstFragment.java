@@ -113,6 +113,8 @@ public class FirstFragment extends Fragment {
     }
 
     public void updateData(List<Student> studentList) {
+        studentAdapter = null;
+        this.studentList = null;
         this.studentList = studentList;
         studentAdapter = new FirstStudentAdapter(this.studentList, isFirstPage);
         if (recyclerView != null)

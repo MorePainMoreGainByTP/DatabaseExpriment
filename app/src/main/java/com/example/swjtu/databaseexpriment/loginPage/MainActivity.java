@@ -1,5 +1,6 @@
 package com.example.swjtu.databaseexpriment.loginPage;
 
+import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -13,25 +14,42 @@ import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.DatePicker;
+import android.widget.EditText;
 import android.widget.RadioButton;
+import android.widget.Toast;
 
 import com.example.swjtu.databaseexpriment.AllUsersActivity;
 import com.example.swjtu.databaseexpriment.R;
 import com.example.swjtu.databaseexpriment.dbUtilities.MySQLiteOpenHelper;
+import com.example.swjtu.databaseexpriment.entity.Arguments;
+import com.example.swjtu.databaseexpriment.entity.Manager;
 import com.example.swjtu.databaseexpriment.entity.User;
 import com.example.swjtu.databaseexpriment.userRights.GeneralUserRightsActivity;
 import com.idescout.sql.SqlScoutServer;
 
+import org.litepal.crud.DataSupport;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+
 public class MainActivity extends AppCompatActivity {
 
-    public static boolean isManager = true;
     private static final String TAG = "MainActivity";
+    public static boolean isManager = true;
     private CheckBox checkBoxReservePass;
     private TextInputLayout userNameWrapper, passWrapper;
     private SharedPreferences sharedPreferences;
     private RadioButton managerRadio, userRadio;
+    private EditText loginDate;
 
     private int userId = -1;
+
+    private int num, days, lockDays;    //错误次数，退回天数，封锁天数
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +68,41 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         hideTop();
+        getArguments();
+    }
+
+    private void getArguments() {
+        List<Arguments> argumentsList = DataSupport.findAll(Arguments.class);
+        if (argumentsList != null && argumentsList.size() > 0) {
+            Arguments arguments = argumentsList.get(0);
+            num = arguments.getNum();
+            days = arguments.getDays();
+            lockDays = arguments.getLockDays();
+        } else {
+            num = 3;
+            days = 3;
+            lockDays = 1;
+
+            Arguments arguments = new Arguments();
+            arguments.setDays(days);
+            arguments.setLockDays(lockDays);
+            arguments.setNum(num);
+            arguments.save();
+
+            Manager manager = new Manager();
+            manager.setFaultTime(0);
+            manager.setPassword("123");
+            manager.setUserName("manager1");
+            manager.setUnlockTime(Calendar.getInstance().getTime());
+            manager.save();
+
+            Manager manager2 = new Manager();
+            manager2.setFaultTime(0);
+            manager2.setPassword("123");
+            manager2.setUserName("manager2");
+            manager2.setUnlockTime(Calendar.getInstance().getTime());
+            manager2.save();
+        }
     }
 
     //使状态栏透明，内容延伸到状态栏
@@ -68,6 +121,31 @@ public class MainActivity extends AppCompatActivity {
         checkBoxReservePass = (CheckBox) findViewById(R.id.checkBoxReservePass);
         managerRadio = (RadioButton) findViewById(R.id.radioManager);
         userRadio = (RadioButton) findViewById(R.id.radioUser);
+        loginDate = (EditText) findViewById(R.id.loginDate);
+        managerRadio.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    loginDate.setVisibility(View.VISIBLE);
+                } else {
+                    loginDate.setVisibility(View.GONE);
+                }
+            }
+        });
+        loginDate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Calendar calendar = Calendar.getInstance();
+                DatePickerDialog datePickerDialog = new DatePickerDialog(MainActivity.this, new DatePickerDialog.OnDateSetListener() {
+                    @Override
+                    public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+                        loginDate.setText(year + "-" + (month + 1) + "-" + dayOfMonth);
+                    }
+                }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
+                datePickerDialog.create();
+                datePickerDialog.show();
+            }
+        });
     }
 
     private void setViews() {
@@ -100,7 +178,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void login(View v) {
+    public void login(View v) throws ParseException {
         if (managerRadio.isChecked())
             isManager = true;
         else isManager = false;
@@ -108,15 +186,19 @@ public class MainActivity extends AppCompatActivity {
         hideKeyboard();
         String userStr = userNameWrapper.getEditText().getText().toString().trim();
         String passStr = passWrapper.getEditText().getText().toString().trim();
-        if (userStr.equals("")) {
+        String dateStr = loginDate.getText().toString().trim();
+        if (isManager && (dateStr.equals("") || dateStr.equals("登录日期")) ) {
+            Toast.makeText(this, "日期不能为空!", Toast.LENGTH_SHORT).show();
+        } else if (userStr.equals("")) {
             userNameWrapper.setError("用户不能为空");
         } else if (passStr.equals("")) {
             passWrapper.setError("密码不能为空");
+        } else if (isManager && !validateLoginDate(dateStr)) {
+            Toast.makeText(this, "日期不合法!", Toast.LENGTH_SHORT).show();
         } else if (!validateUserName(userStr)) {
             userNameWrapper.setError("用户不存在");
             userNameWrapper.getEditText().selectAll();
         } else if (!validatePass(userStr, passStr)) {
-            passWrapper.setError("密码错误");
             passWrapper.getEditText().selectAll();
         } else {
             doLogin(userStr, passStr);
@@ -133,10 +215,34 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private boolean validateLoginDate(String dateStr) throws ParseException {
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        Date loginDate = simpleDateFormat.parse(dateStr);
+        Calendar calendar1 = Calendar.getInstance();
+        Calendar calendar2 = Calendar.getInstance();
+        calendar1.set(Calendar.HOUR_OF_DAY, 0);
+        calendar1.set(Calendar.MINUTE, 0);
+        calendar1.set(Calendar.SECOND, 0);
+        calendar2.setTime(loginDate);
+        calendar2.set(Calendar.HOUR_OF_DAY, 0);
+        calendar2.set(Calendar.MINUTE, 0);
+        calendar2.set(Calendar.SECOND, 0);
+        if (calendar2.compareTo(calendar1) <= 0) {
+            calendar1.add(Calendar.DAY_OF_MONTH, -days - 1);
+            if (calendar2.compareTo(calendar1) >= 0) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     private boolean validateUserName(String userName) {
-        if (isManager)
-            return userName.equals("2014112217");
-        else {
+        if (isManager) {
+            List<Manager> managerList = DataSupport.where("userName = ?", userName).find(Manager.class);
+            if (managerList != null && managerList.size() > 0) {
+                return true;
+            }
+        } else {
             MySQLiteOpenHelper mySQLiteOpenHelper = new MySQLiteOpenHelper(this, "DBExperiment.db3", null, 1);
             Cursor cursor = mySQLiteOpenHelper.getReadableDatabase().rawQuery("select * from users where user_name = ?", new String[]{userName});
             if (cursor != null && cursor.moveToNext()) {
@@ -152,9 +258,42 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private boolean validatePass(String user, String pass) {
-        if (isManager)
-            return pass.equals("123");
-        else {
+        if (isManager) {
+            List<Manager> managerList = DataSupport.where("userName = ?", user).find(Manager.class);
+            if (managerList != null && managerList.size() > 0) {
+                Manager manager = managerList.get(0);
+                if (manager.getFaultTime() >= num) {
+                    Calendar calendar = Calendar.getInstance();
+                    Calendar calendar1 = Calendar.getInstance();
+                    calendar1.setTime(manager.getUnlockTime());
+                    if (calendar1.compareTo(calendar) > 0) {
+                        passWrapper.setError("账户被封锁，解锁日期:" + manager.getUnlockTime().toLocaleString());
+                        return false;
+                    } else {
+                        manager.setFaultTime(0);
+                        manager.save();
+                    }
+                }
+                if (manager.getPassword().equals(pass)) {
+                    manager.setFaultTime(0);
+                    manager.save();
+                    return true;
+                } else {
+                    manager.setFaultTime(manager.getFaultTime() + 1);
+                    passWrapper.setError("密码错误，出错次数剩余：" + (num - manager.getFaultTime()) + "次");
+                    if (manager.getFaultTime() >= num) {
+                        Calendar calendar = Calendar.getInstance();
+                        Log.i(TAG, "calendar: " + calendar.get(Calendar.DAY_OF_MONTH));
+                        calendar.add(Calendar.DAY_OF_MONTH, lockDays);
+                        Log.i(TAG, "calendar: " + calendar.get(Calendar.DAY_OF_MONTH));
+                        manager.setUnlockTime(calendar.getTime());
+
+                    }
+                    manager.save();
+                    return false;
+                }
+            }
+        } else {
             MySQLiteOpenHelper mySQLiteOpenHelper = new MySQLiteOpenHelper(this, "DBExperiment.db3", null, 1);
             Cursor cursor = mySQLiteOpenHelper.getReadableDatabase().rawQuery("select * from users where user_name = ? and password = ?", new String[]{user, pass});
             if (cursor != null && cursor.moveToNext()) {
@@ -166,6 +305,7 @@ public class MainActivity extends AppCompatActivity {
             else {
                 Log.i(TAG, "用户：没有查询结果");
             }
+            return false;
         }
         return false;
     }
@@ -186,37 +326,6 @@ public class MainActivity extends AppCompatActivity {
         if (view != null) {
             ((InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE)).
                     hideSoftInputFromWindow(view.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
-        }
-    }
-
-    private void testDB() {
-        MySQLiteOpenHelper mySQLiteOpenHelper = new MySQLiteOpenHelper(this, "DBExperiment.db3", null, 1);
-        Cursor cursor = mySQLiteOpenHelper.getReadableDatabase().rawQuery("select * from users", new String[]{});
-        while (cursor != null && cursor.moveToNext()) {
-            Log.i(TAG, "用户：" + cursor.getInt(0) + "," + cursor.getString(1) + "," + cursor.getString(2));
-        }
-        if (cursor != null)
-            cursor.close();
-        else {
-            Log.i(TAG, "用户：没有查询结果");
-        }
-        Cursor cursor1 = mySQLiteOpenHelper.getReadableDatabase().rawQuery("select * from rights", new String[]{});
-        while (cursor1 != null && cursor1.moveToNext()) {
-            Log.i(TAG, "权限：" + cursor1.getInt(0) + "," + cursor1.getInt(1) + "," + cursor1.getString(2) + "," + cursor1.getString(3) + "," + cursor1.getString(4));
-        }
-        if (cursor1 != null)
-            cursor1.close();
-        else {
-            Log.i(TAG, "权限：没有查询结果");
-        }
-        Cursor cursor2 = mySQLiteOpenHelper.getReadableDatabase().rawQuery("select * from user_rights", new String[]{});
-        while (cursor2 != null && cursor2.moveToNext()) {
-            Log.i(TAG, "权限分配：" + cursor2.getInt(0) + "," + cursor2.getInt(1) + "," + cursor2.getInt(2));
-        }
-        if (cursor2 != null)
-            cursor2.close();
-        else {
-            Log.i(TAG, "权限分配：没有查询结果");
         }
     }
 }
